@@ -14,7 +14,16 @@ io.on("connection", (socket) => {
   console.log("User connected with: ", socket.id);
 
   socket.on("send-message", (data) => {
-    io.emit("send-message", data);
+    const [message, roomId] = data;
+    if (roomId !== null) {
+      socket.to(roomId).emit("send-message", message);
+    } else {
+      socket.emit("send-message", message);
+    }
+  });
+  socket.on("join-room", (roomId) => {
+    socket.join(roomId);
+    console.log("room id: ", roomId);
   });
 });
 
