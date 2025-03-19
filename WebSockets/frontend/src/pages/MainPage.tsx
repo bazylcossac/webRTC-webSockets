@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { v4 as uuid } from "uuid";
-const socket = io(process.env.SERVER_URL);
+const socket = io("http://localhost:3000");
 
 function MainPage() {
   const [messages, setMessages] = useState<string[]>([]);
@@ -16,6 +16,7 @@ function MainPage() {
 
   const submitSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
+
     socket.emit("send-message", [inputValue, null]);
     setInputValue("");
   };
@@ -23,16 +24,18 @@ function MainPage() {
   // generate new room
   const generateRoom = () => {
     const roomId = uuid();
-    socket.emit("join-room", roomId);
-    navigate(`/room/${roomId}`);
+    socket.emit("join-room", 10);
+    navigate(`/room/${10}`);
   };
 
   useEffect(() => {
     socket.on("send-message", (message) => {
+      console.log(message);
       setMessages((prev) => [...prev, message]);
     });
     return () => {
       socket.off("send-message");
+      // socket.disconnect();
     };
   }, []);
 

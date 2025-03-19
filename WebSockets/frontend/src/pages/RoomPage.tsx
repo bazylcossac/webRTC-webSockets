@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 
-const socket = io(process.env.SERVER_URL);
+const socket = io("http://localhost:3000");
 
-function MainPage() {
+function RoomPage() {
   const [messages, setMessages] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
+  const navigate = useNavigate();
   const { roomId } = useParams();
 
   const handleInputChange = (message: string) => {
@@ -19,14 +20,18 @@ function MainPage() {
     setInputValue("");
   };
 
+  const leaveRoom = () => {
+    socket.emit("leave-room", roomId);
+    navigate("/");
+  };
+
   useEffect(() => {
-    socket.on("join-room", (args) => {
-      console.log(args);
-    });
-  });
+    socket.emit("join-room", roomId);
+  }, [roomId]);
 
   useEffect(() => {
     socket.on("send-message", (message) => {
+      console.log(message);
       setMessages((prev) => [...prev, message]);
     });
     return () => {
@@ -36,7 +41,7 @@ function MainPage() {
 
   return (
     <>
-      <p>home page</p>
+      <p>Room: {roomId}</p>
       <form onSubmit={submitSendMessage}>
         <input
           type="text"
@@ -49,8 +54,10 @@ function MainPage() {
       {messages.map((message, i) => (
         <p key={i}>{message}</p>
       ))}
+
+      <button onClick={leaveRoom}>Leave</button>
     </>
   );
 }
 
-export default MainPage;
+export default RoomPage;

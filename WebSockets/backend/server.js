@@ -11,19 +11,28 @@ const io = new Server(httpServer, {
 });
 
 io.on("connection", (socket) => {
+  console.log(socket.rooms);
   console.log("User connected with: ", socket.id);
 
   socket.on("send-message", (data) => {
+    console.log(data);
     const [message, roomId] = data;
-    if (roomId !== null) {
-      socket.to(roomId).emit("send-message", message);
+
+    if (roomId) {
+      io.to(roomId).emit("send-message", message);
     } else {
-      socket.emit("send-message", message);
+      io.emit("send-message", message);
     }
   });
   socket.on("join-room", (roomId) => {
-    socket.join(roomId);
     console.log("room id: ", roomId);
+    if (roomId) {
+      socket.join(roomId);
+    }
+  });
+
+  socket.on("leave-room", (roomId) => {
+    socket.leave(roomId);
   });
 });
 
@@ -34,5 +43,3 @@ httpServer.listen(3000, () => {
 app.get("/", (req, res) => {
   res.json({ message: "server working" });
 });
-
-// io.listen(3000);
