@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { io } from "socket.io-client";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [messages, setMessages] = useState([]);
+  const socket = io();
 
+  useEffect(() => {}, []);
   return (
     <>
       <p>home page</p>
