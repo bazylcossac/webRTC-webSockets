@@ -18,10 +18,10 @@ io.on("connection", (socket) => {
     console.log(data);
     const [message, roomId] = data;
 
-    if (roomId) {
+    if (roomId !== "all") {
       io.to(roomId).emit("send-message", message);
-    } else {
-      io.emit("send-message", message);
+    } else if (roomId === "all") {
+      io.to(roomId).emit("send-message", message);
     }
   });
   socket.on("join-room", (roomId) => {

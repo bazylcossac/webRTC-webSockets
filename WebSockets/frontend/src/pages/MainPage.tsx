@@ -17,7 +17,7 @@ function MainPage() {
   const submitSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
 
-    socket.emit("send-message", [inputValue, null]);
+    socket.emit("send-message", [inputValue, "all"]);
     setInputValue("");
   };
 
@@ -27,6 +27,10 @@ function MainPage() {
     socket.emit("join-room", 10);
     navigate(`/room/${10}`);
   };
+
+  useEffect(() => {
+    socket.emit("join-room", "all");
+  }, []);
 
   useEffect(() => {
     socket.on("send-message", (message) => {
