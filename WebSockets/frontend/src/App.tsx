@@ -2,7 +2,7 @@
 import { Routes, Route } from "react-router-dom";
 
 import RoomPage from "./pages/RoomPage";
-import MainPage from "./pages/mainPage";
+import MainPage from "./pages/MainPage";
 export default function App() {
   return (
     <Routes>

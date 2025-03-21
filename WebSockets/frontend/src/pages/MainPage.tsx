@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { v4 as uuid } from "uuid";
-const socket = io("http://localhost:3000");
+
+const socket = io(process.env.SERVER_URL);
 
 function MainPage() {
   const [messages, setMessages] = useState<string[]>([]);
@@ -24,8 +25,8 @@ function MainPage() {
   // generate new room
   const generateRoom = () => {
     const roomId = uuid();
-    socket.emit("join-room", 10);
-    navigate(`/room/${10}`);
+    socket.emit("join-room", roomId);
+    navigate(`/room/${roomId}`);
   };
 
   useEffect(() => {
@@ -39,7 +40,6 @@ function MainPage() {
     });
     return () => {
       socket.off("send-message");
-      // socket.disconnect();
     };
   }, []);
 

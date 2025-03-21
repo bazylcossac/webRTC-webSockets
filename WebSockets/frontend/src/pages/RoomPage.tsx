@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 
 const socket = io("http://localhost:3000");
@@ -8,6 +8,7 @@ function RoomPage() {
   const [messages, setMessages] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
   const { roomId } = useParams();
 
   const handleInputChange = (message: string) => {
@@ -20,11 +21,24 @@ function RoomPage() {
     setInputValue("");
   };
 
-  const leaveRoom = () => {
-    socket.emit("leave-room", roomId);
+  const leaveRoom = (event: string, roomId: string | undefined) => {
+    if (!roomId) {
+      alert("No room id");
+      return;
+    }
+    socket.emit(event, roomId);
     navigate("/");
   };
 
+  const copyToClipboard = (roomId: string | undefined) => {
+    if (!roomId) {
+      alert("No roomId");
+      return;
+    }
+    const roomUrl = "http://localhost:5173" + location.pathname;
+    navigator.clipboard.writeText(roomUrl);
+    alert("Url copied!");
+  };
   useEffect(() => {
     socket.emit("join-room", roomId);
   }, [roomId]);
@@ -42,6 +56,7 @@ function RoomPage() {
   return (
     <>
       <p>Room: {roomId}</p>
+      <button onClick={() => copyToClipboard(roomId)}>Invite to room</button>
       <form onSubmit={submitSendMessage}>
         <input
           type="text"
@@ -55,7 +70,7 @@ function RoomPage() {
         <p key={i}>{message}</p>
       ))}
 
-      <button onClick={leaveRoom}>Leave</button>
+      <button onClick={() => leaveRoom("leave-room", roomId)}>Leave</button>
     </>
   );
 }

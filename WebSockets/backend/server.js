@@ -11,9 +11,6 @@ const io = new Server(httpServer, {
 });
 
 io.on("connection", (socket) => {
-  console.log(socket.rooms);
-  console.log("User connected with: ", socket.id);
-
   socket.on("send-message", (data) => {
     console.log(data);
     const [message, roomId] = data;
@@ -25,6 +22,7 @@ io.on("connection", (socket) => {
     }
   });
   socket.on("join-room", (roomId) => {
+    console.log("User connected with: ", socket.id);
     console.log("room id: ", roomId);
     if (roomId) {
       socket.join(roomId);
