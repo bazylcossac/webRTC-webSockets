@@ -9,12 +9,20 @@ const constraints = {
 
 function App() {
   const [allDevices, setAllDevices] = useState<MediaDeviceInfo[]>([]);
-  const [audioOutput, setAudioOutput] = useState([]);
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const handleOutputDeviceChange = async (outputDeviceId: string) => {
     await videoRef.current?.setSinkId(outputDeviceId);
     // console.log(value);
+  };
+
+  const handleInputDeviceChange = async (inputDeviceId: string) => {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: { deviceId: { exact: inputDeviceId } },
+      video: true,
+    });
+    videoRef.current!.srcObject = stream;
   };
 
   useEffect(() => {
@@ -31,8 +39,7 @@ function App() {
   useEffect(() => {
     const getMediaStream = async () => {
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      // const videoTracks = stream.getVideoTracks();
-      // const videoElement = document.getElementById("videoEl")!;
+
       if (videoRef.current === null) {
         alert("no cam");
       }
@@ -43,7 +50,6 @@ function App() {
 
   return (
     <>
-      <p>hello world1</p>
       <div className="flex flex-row gap-2">
         <select
           className="borded-1 border-white focus:outline-none active:outline-none"
@@ -58,11 +64,13 @@ function App() {
             ))}
         </select>
 
-        <select>
+        <select onChange={(e) => handleInputDeviceChange(e.target.value)}>
           {allDevices
             .filter((device) => device.kind === "audioinput")
             .map((device) => (
-              <option key={device.deviceId}>{device.label}</option>
+              <option key={device.deviceId} value={device.deviceId}>
+                {device.label}
+              </option>
             ))}
         </select>
       </div>
