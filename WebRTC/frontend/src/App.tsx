@@ -9,10 +9,12 @@ const constraints = {
 
 function App() {
   const [allDevices, setAllDevices] = useState<MediaDeviceInfo[]>([]);
+
   const [isSharingScreen, setIsSharingScreen] = useState(false);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const videoSharingContainer = useRef(null);
+  const videoSharingScreenContainer = useRef<HTMLVideoElement | null>(null);
+  const videoSharingScreenStream = useRef<MediaStream | null>(null);
 
   // Change outut device source
   const handleOutputDeviceChange = async (outputDeviceId: string) => {
@@ -29,12 +31,28 @@ function App() {
   };
 
   const handleSharingScreen = async () => {
-    const stream = await navigator.mediaDevices.getDisplayMedia(constraints);
     if (isSharingScreen) {
-      stream.getVideoTracks()[0].enabled = false;
+      stopSharingScreen();
       return;
     }
-    videoSharingContainer.current!.srcObject = stream;
+    // get display media stream
+    const stream = await navigator.mediaDevices.getDisplayMedia(constraints);
+    videoSharingScreenStream.current = stream;
+
+    // set stream to it's video container
+    if (videoSharingScreenStream.current)
+      videoSharingScreenContainer.current!.srcObject =
+        videoSharingScreenStream.current;
+    setIsSharingScreen(true);
+  };
+
+  const stopSharingScreen = () => {
+    videoSharingScreenStream
+      .current!.getVideoTracks()
+      .forEach((track) => track.stop());
+
+    videoSharingScreenStream.current = null;
+    setIsSharingScreen(false);
   };
 
   useEffect(() => {
@@ -86,10 +104,9 @@ function App() {
             ))}
         </select>
         <button
-          className="border-1 border-white p-1 rounded-lg hover:bg-white hover:text-black hover:cursor-pointer transition"
+          className="border-1 border-white p-1 rounded-lg hover:bg-white hover:text-black hover:cursor-pointer disabled:bg-gray-500 transition"
           onClick={() => {
             handleSharingScreen();
-            setIsSharingScreen(true);
           }}
         >
           {isSharingScreen ? "stop" : "start"} sharing screen
@@ -102,12 +119,16 @@ function App() {
         autoPlay
         playsInline
       />
-      <video
-        className="w-full h-[1080px]"
-        ref={videoSharingContainer}
-        autoPlay
-        playsInline
-      />
+      {videoSharingScreenStream.current ? (
+        <video
+          className="w-full h-[1080px]"
+          ref={videoSharingScreenContainer}
+          autoPlay
+          playsInline
+        />
+      ) : (
+        <video ref={videoSharingScreenContainer}></video>
+      )}
     </>
   );
 }
