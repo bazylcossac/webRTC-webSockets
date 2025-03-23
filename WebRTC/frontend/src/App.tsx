@@ -1,10 +1,19 @@
 //https://webrtc.github.io/samples/src/content/devices/input-output/
+// https://webrtc.github.io/samples/
+
+/* TODO
+ *
+ *  HANDLE NO CAMERA MIC ONLY CASEd
+ *  CREATE REDUX STORE
+ *  MOVE STUFF TO ITS OWN COMPONENTd
+ */
+
 "use strict";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const constraints = {
   video: true,
-  audio: true,
+  audio: false,
 };
 
 function App() {
@@ -54,7 +63,7 @@ function App() {
     videoSharingScreenStream.current = null;
     setIsSharingScreen(false);
   };
-
+  // get all conected media devices (mics, speakers etc.)
   useEffect(() => {
     const getAllConectedDevices = async () => {
       const deivces = await navigator.mediaDevices.enumerateDevices();
@@ -115,13 +124,14 @@ function App() {
 
       <video
         ref={videoRef}
-        className="rotate-y-180 rounded-xl "
+        className="rotate-y-180 rounded-xl w-[500px] m-10"
         autoPlay
         playsInline
       />
+
       {videoSharingScreenStream.current ? (
         <video
-          className="w-full h-[1080px]"
+          className="w-[1000px] aspect-video "
           ref={videoSharingScreenContainer}
           autoPlay
           playsInline

@@ -12,7 +12,6 @@ const io = new Server(httpServer, {
 
 io.on("connection", (socket) => {
   socket.on("send-message", (data) => {
-    console.log(data);
     const [message, roomId] = data;
 
     if (roomId !== "all") {
