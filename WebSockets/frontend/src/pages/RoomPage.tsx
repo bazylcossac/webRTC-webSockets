@@ -1,8 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { io } from "socket.io-client";
+import { Peer } from "https://esm.sh/peerjs@1.5.4?bundle-deps";
 
 const socket = io("http://localhost:3000");
+
+const peer = new Peer(undefined, {
+  host: "/",
+  port: "3001",
+});
 
 const constraints = {
   video: true,
@@ -12,9 +18,10 @@ const constraints = {
 function RoomPage() {
   const [messages, setMessages] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
-  // const [constants, setConstants] = useState({ vide: true, audio: false });
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
+  const otherVideoRefsContainer = useRef<HTMLDivElement | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const { roomId } = useParams();
@@ -48,13 +55,44 @@ function RoomPage() {
     alert("Url copied!");
   };
 
+  const addVideoStream = (userVideo, userUserStream) => {
+    userVideo.srcObject = userUserStream;
+    userVideo.style.width = "300px";
+    userVideo.style.margin = "10px";
+    otherVideoRefsContainer.current?.appendChild(userVideo);
+  };
+
+  const connectToNewUser = (userId, stream) => {
+    const call = peer.call(userId, stream);
+    const userVideo = document.createElement("video");
+    call.on("stream", (userVideoStream) => {
+      addVideoStream(userVideo, userVideoStream);
+    });
+
+    call.on("close", () => {
+      userVideo.remove();
+    });
+  };
+
   useEffect(() => {
     const getMediaStream = async () => {
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      videoRef.current!.srcObject = stream;
+      const myVideo = document.createElement("video");
+      addVideoStream(myVideo, stream);
+      peer.on("call", (call) => {
+        call.answer(stream);
+        const userVideo = document.createElement("video");
+        call.on("stream", (userUserStream) => {
+          addVideoStream(userVideo, userUserStream);
+        });
+      });
+
+      socket.on("user-connected", (userId) => {
+        connectToNewUser(userId, stream);
+      });
     };
     getMediaStream();
-  }, []);
+  });
 
   useEffect(() => {
     socket.emit("join-room", roomId);
@@ -79,6 +117,7 @@ function RoomPage() {
         autoPlay
         playsInline
       />
+      <div ref={otherVideoRefsContainer} style={{ width: "100%" }}></div>
       <button onClick={() => copyToClipboard(roomId)}>Invite to room</button>
       <form onSubmit={submitSendMessage}>
         <input
