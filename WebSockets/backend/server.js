@@ -2,7 +2,6 @@ import express from "express";
 import http from "http";
 import { Server } from "socket.io";
 
-
 const app = express();
 const httpServer = http.createServer(app);
 const io = new Server(httpServer, {
@@ -10,8 +9,6 @@ const io = new Server(httpServer, {
     origin: "http://localhost:5173",
   },
 });
-
-
 
 io.on("connection", (socket) => {
   socket.on("send-message", (data) => {
@@ -23,11 +20,12 @@ io.on("connection", (socket) => {
       io.to(roomId).emit("send-message", message);
     }
   });
-  socket.on("join-room", (roomId) => {
-    console.log("User connected with: ", socket.id);
+  socket.on("join-room", (roomId, id) => {
+    console.log("User connected with: ", id);
     console.log("room id: ", roomId);
     if (roomId) {
       socket.join(roomId);
+      socket.to(roomId).emit("user-connected", id);
     }
   });
 

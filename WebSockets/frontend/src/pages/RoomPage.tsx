@@ -55,15 +55,24 @@ function RoomPage() {
     alert("Url copied!");
   };
 
-  const addVideoStream = (userVideo, userUserStream) => {
-    userVideo.srcObject = userUserStream;
+  const addVideoStream = (userVideo, userStream) => {
+    const videoDiv = document.createElement("div");
+    const idParagraph = document.createElement("p");
+    idParagraph.textContent = userStream.id;
+    if (!otherVideoRefsContainer.current) return;
+    userVideo.srcObject = userStream;
+    userVideo.autoplay = true;
+    userVideo.playsInline = true;
     userVideo.style.width = "300px";
     userVideo.style.margin = "10px";
-    otherVideoRefsContainer.current?.appendChild(userVideo);
+    videoDiv.appendChild(userVideo);
+    videoDiv.appendChild(idParagraph);
+    otherVideoRefsContainer.current?.appendChild(videoDiv);
+    console.log(userStream.id);
   };
 
-  const connectToNewUser = (userId, stream) => {
-    const call = peer.call(userId, stream);
+  const connectToNewUser = (id, stream) => {
+    const call = peer.call(id, stream);
     const userVideo = document.createElement("video");
     call.on("stream", (userVideoStream) => {
       addVideoStream(userVideo, userVideoStream);
@@ -76,7 +85,9 @@ function RoomPage() {
 
   useEffect(() => {
     const getMediaStream = async () => {
+      console.log("s");
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
       const myVideo = document.createElement("video");
       addVideoStream(myVideo, stream);
       peer.on("call", (call) => {
@@ -87,15 +98,17 @@ function RoomPage() {
         });
       });
 
-      socket.on("user-connected", (userId) => {
-        connectToNewUser(userId, stream);
+      socket.on("user-connected", (id) => {
+        connectToNewUser(id, stream);
       });
     };
     getMediaStream();
-  });
+  }, []);
 
   useEffect(() => {
-    socket.emit("join-room", roomId);
+    peer.on("open", (id: string) => {
+      socket.emit("join-room", roomId, id);
+    });
   }, [roomId]);
 
   useEffect(() => {
@@ -117,7 +130,10 @@ function RoomPage() {
         autoPlay
         playsInline
       />
-      <div ref={otherVideoRefsContainer} style={{ width: "100%" }}></div>
+      <div
+        ref={otherVideoRefsContainer}
+        style={{ width: "100%", display: "flex", flexDirection: "row" }}
+      ></div>
       <button onClick={() => copyToClipboard(roomId)}>Invite to room</button>
       <form onSubmit={submitSendMessage}>
         <input
