@@ -1,27 +1,15 @@
 import ActiveUserBlock from "./activeUserBlock";
 import styles from "./dashboard.module.css";
-const users = [
-  {
-    socketId: 123,
-    name: "Michal",
-  },
-  {
-    socketId: 568,
-    name: "Berni",
-  },
-  {
-    socketId: 133,
-    name: "Nicola",
-  },
-];
+import { useSelector } from "react-redux";
 
 function ActiveUsers() {
+  const activeUsers = useSelector((state) => state.user.activeUsers);
   return (
     <div className={styles.activeUsersContainer}>
-      {users.map((user) => (
+      {activeUsers.map((user) => (
         <ActiveUserBlock
           socketId={user.socketId}
-          name={user.name}
+          name={user.username}
           key={user.socketId}
         />
       ))}

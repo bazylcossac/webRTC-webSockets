@@ -1,11 +1,13 @@
 import { useEffect, useRef } from "react";
 import styles from "../styles/loginPage.module.css";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUserName } from "../store/slices/userSlice";
 import { useNavigate } from "react-router-dom";
+import { registerNewUser } from "../utils/connectToWs";
 
 function Login() {
   const dispatch = useDispatch();
+  const username = useSelector((state) => state.user.name);
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -32,6 +34,7 @@ function Login() {
             className={styles.enterBtn}
             onClick={(e) => {
               e.preventDefault();
+              registerNewUser(username);
               navigate("/dashboard");
             }}
           >
