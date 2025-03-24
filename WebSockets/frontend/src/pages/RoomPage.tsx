@@ -6,13 +6,15 @@ import { Peer } from "https://esm.sh/peerjs@1.5.4?bundle-deps";
 const socket = io("http://localhost:3000");
 
 const peer = new Peer(undefined, {
-  host: "/",
-  port: "3001",
+  host: "localhost",
+  port: 3001,
+  path: "/peerjs",
+  // debug: 3,
 });
 
 const constraints = {
   video: true,
-  audio: true,
+  audio: false,
 };
 
 function RoomPage() {
@@ -72,6 +74,7 @@ function RoomPage() {
 
   const addVideoStream = (videoDiv, userVideo, userStream) => {
     if (!userStream.active) return;
+    const audio = document.createElement("audio");
 
     const idParagraph = document.createElement("p");
     const activeP = document.createElement("p");
@@ -80,6 +83,7 @@ function RoomPage() {
     if (!otherVideoRefsContainer.current) return;
     videoDiv.id = userStream.id;
     userVideo.srcObject = userStream;
+    audio.srcObject = userStream;
     userVideo.autoplay = true;
     userVideo.playsInline = true;
 
@@ -87,11 +91,12 @@ function RoomPage() {
     userVideo.style.margin = "10px";
     userVideo.style.borderWidth = "10px";
     videoDiv.appendChild(userVideo);
+    videoDiv.appendChild(audio);
     videoDiv.appendChild(idParagraph);
     videoDiv.appendChild(activeP);
     otherVideoRefsContainer.current?.appendChild(videoDiv);
   };
-
+  console.log(otherVideoRefsContainer.current);
   useEffect(() => {
     const getMediaStream = async () => {
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
