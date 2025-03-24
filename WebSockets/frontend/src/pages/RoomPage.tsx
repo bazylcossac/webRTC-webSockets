@@ -12,13 +12,14 @@ const peer = new Peer(undefined, {
 
 const constraints = {
   video: true,
-  audio: false,
+  audio: true,
 };
 
 function RoomPage() {
   const [messages, setMessages] = useState<string[]>([]);
   const [inputValue, setInputValue] = useState("");
 
+  const peers = {};
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const otherVideoRefsContainer = useRef<HTMLDivElement | null>(null);
@@ -42,6 +43,7 @@ function RoomPage() {
       return;
     }
     socket.emit(event, roomId);
+
     navigate("/");
   };
 
@@ -55,46 +57,55 @@ function RoomPage() {
     alert("Url copied!");
   };
 
-  const addVideoStream = (userVideo, userStream) => {
+  const connectToNewUser = (userId, stream) => {
+    const call = peer.call(userId, stream);
     const videoDiv = document.createElement("div");
-    const idParagraph = document.createElement("p");
-    idParagraph.textContent = userStream.id;
-    if (!otherVideoRefsContainer.current) return;
-    userVideo.srcObject = userStream;
-    userVideo.autoplay = true;
-    userVideo.playsInline = true;
-    userVideo.style.width = "300px";
-    userVideo.style.margin = "10px";
-    videoDiv.appendChild(userVideo);
-    videoDiv.appendChild(idParagraph);
-    otherVideoRefsContainer.current?.appendChild(videoDiv);
-    console.log(userStream.id);
-  };
-
-  const connectToNewUser = (id, stream) => {
-    const call = peer.call(id, stream);
-    const userVideo = document.createElement("video");
-    call.on("stream", (userVideoStream) => {
-      addVideoStream(userVideo, userVideoStream);
+    const myVideo = document.createElement("video");
+    call.on("stream", (remoteStream) => {
+      addVideoStream(videoDiv, myVideo, remoteStream);
     });
 
     call.on("close", () => {
-      userVideo.remove();
+      myVideo.remove();
     });
+  };
+
+  const addVideoStream = (videoDiv, userVideo, userStream) => {
+    if (!userStream.active) return;
+
+    const idParagraph = document.createElement("p");
+    const activeP = document.createElement("p");
+    idParagraph.textContent = userStream.id;
+    activeP.textContent = userStream.active;
+    if (!otherVideoRefsContainer.current) return;
+    videoDiv.id = userStream.id;
+    userVideo.srcObject = userStream;
+    userVideo.autoplay = true;
+    userVideo.playsInline = true;
+
+    userVideo.style.width = "300px";
+    userVideo.style.margin = "10px";
+    userVideo.style.borderWidth = "10px";
+    videoDiv.appendChild(userVideo);
+    videoDiv.appendChild(idParagraph);
+    videoDiv.appendChild(activeP);
+    otherVideoRefsContainer.current?.appendChild(videoDiv);
   };
 
   useEffect(() => {
     const getMediaStream = async () => {
-      console.log("s");
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
-
+      const videoDiv = document.createElement("div");
       const myVideo = document.createElement("video");
-      addVideoStream(myVideo, stream);
+
+      addVideoStream(videoDiv, myVideo, stream);
       peer.on("call", (call) => {
         call.answer(stream);
+
+        const videoDiv = document.createElement("div");
         const userVideo = document.createElement("video");
         call.on("stream", (userUserStream) => {
-          addVideoStream(userVideo, userUserStream);
+          addVideoStream(videoDiv, userVideo, userUserStream);
         });
       });
 
@@ -112,8 +123,16 @@ function RoomPage() {
   }, [roomId]);
 
   useEffect(() => {
+    socket.on("user-disconnected", (id) => {
+      if (peers[id]) {
+        peers[id].close();
+      }
+      console.log(peers);
+    });
+  }, []);
+
+  useEffect(() => {
     socket.on("send-message", (message) => {
-      console.log(message);
       setMessages((prev) => [...prev, message]);
     });
     return () => {

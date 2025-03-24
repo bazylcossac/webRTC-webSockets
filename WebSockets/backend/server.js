@@ -27,6 +27,9 @@ io.on("connection", (socket) => {
       socket.join(roomId);
       socket.to(roomId).emit("user-connected", id);
     }
+    socket.on("disconnect", () => {
+      socket.to(roomId).emit("user-disconnected", id);
+    });
   });
 
   socket.on("leave-room", (roomId) => {
