@@ -1,18 +1,17 @@
-import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { setUserName } from "../store/slices/userSlice";
+import ActiveUsers from "../components/dashboard/activeUsers";
+import styles from "../styles/dashboardPage.module.css";
 function Dashboard() {
-  const dispatch = useDispatch();
-  const userCurrentName = useSelector((state) => state.user.name);
-
   return (
-    <div>
-      {userCurrentName}
-      <input
-        type="text"
-        onChange={(e) => dispatch(setUserName(e.target.value))}
-      />
-    </div>
+    <section>
+      <div className={styles.mainContainerWrapper}>
+        <div className={styles.mainContainer}>Main</div>
+
+        <div className={styles.usersListRight}>
+          <ActiveUsers />
+        </div>
+      </div>
+      <div className={styles.usersListBottom}></div>
+    </section>
   );
 }
 

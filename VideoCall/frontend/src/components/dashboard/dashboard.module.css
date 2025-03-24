@@ -1,0 +1,19 @@
+.activeUserBlock {
+  width: auto;
+  height: 100px;
+  background-color: rgb(75, 46, 75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid black;
+  cursor: pointer;
+}
+.activeUserBlock:hover {
+  background-color: rgb(65, 36, 65);
+}
+
+.activeUsersContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}

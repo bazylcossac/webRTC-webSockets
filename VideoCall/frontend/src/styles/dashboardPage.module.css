@@ -1,0 +1,22 @@
+.mainContainerWrapper {
+  display: flex;
+  flex-direction: row;
+}
+
+.mainContainer {
+  width: 80%;
+  height: 600px;
+  background-color: rgb(122, 108, 217);
+}
+
+.usersListRight {
+  background-color: rgb(53, 53, 53);
+  height: 632px;
+  width: 20%;
+}
+
+.usersListBottom {
+  background-color: rgb(53, 53, 53);
+  width: auto;
+  height: 200px;
+}
