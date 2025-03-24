@@ -36,4 +36,9 @@ io.on("connection", (socket) => {
     });
     console.log(peers);
   });
+  socket.on("disconnect", () => {
+    const newPeers = peers.filter((users) => users.socketId !== socket.id);
+    peers = newPeers;
+    io.sockets.emit("user-leave", socket.id);
+  });
 });
