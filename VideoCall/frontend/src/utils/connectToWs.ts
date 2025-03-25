@@ -17,13 +17,13 @@ export const connectoToWs = () => {
     console.log(data.activeUsers);
   });
 
-  socket.on("user-leave", (socketId) => {
-    const activeUsers = store.getState().user.activeUsers;
-    const newActiveUsers = activeUsers.filter(
-      (user) => user.socketId !== socketId
-    );
-    store.dispatch(setActiveUsers(newActiveUsers));
-  });
+  // socket.on("user-leave", (socketId) => {
+  //   const activeUsers = store.getState().user.activeUsers;
+  //   const newActiveUsers = activeUsers.filter(
+  //     (user) => user.socketId !== socketId
+  //   );
+  //   store.dispatch(setActiveUsers(newActiveUsers));
+  // });
 };
 
 export const registerNewUser = (username: string) => {
