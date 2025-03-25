@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   localStream: null,
+  remoteStream: null,
 };
 
 const webRTCSlice = createSlice({
@@ -9,10 +10,14 @@ const webRTCSlice = createSlice({
   initialState,
   reducers: {
     setLocalStream: (state, action) => {
+      console.log(action.payload);
       state.localStream = action.payload;
+    },
+    setRemoteStream: (state, action) => {
+      state.remoteStream = action.payload;
     },
   },
 });
 
-export const { setLocalStream } = webRTCSlice.actions;
+export const { setLocalStream, setRemoteStream } = webRTCSlice.actions;
 export default webRTCSlice.reducer;
