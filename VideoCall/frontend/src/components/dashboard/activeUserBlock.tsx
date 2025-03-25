@@ -1,3 +1,4 @@
+import { callToOtherUser } from "../../utils/webRTCHandler";
 import styles from "../dashboard/dashboard.module.css";
 
 function ActiveUserBlock({
@@ -7,8 +8,17 @@ function ActiveUserBlock({
   socketId: number;
   name: string;
 }) {
+  const handleListItemPressed = () => {
+    const calleDetails = { socketId, name };
+    callToOtherUser(calleDetails);
+  };
+
   return (
-    <div id={socketId.toString()} className={styles.activeUserBlock}>
+    <div
+      id={socketId.toString()}
+      className={styles.activeUserBlock}
+      onClick={handleListItemPressed}
+    >
       <p>{name}</p>
     </div>
   );

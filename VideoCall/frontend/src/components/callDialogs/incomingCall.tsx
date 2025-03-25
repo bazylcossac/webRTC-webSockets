@@ -13,7 +13,7 @@ function IncomingCall() {
       <p className="direct_call_dialog_caller_name">Caller</p>
       <div className="direct_call_dialog_button_container">
         <button
-          className="direct_call_dialog_accept_button"
+          className=".irect_call_dialog_accept_button"
           onClick={handleAcceptCall}
         >
           Accept

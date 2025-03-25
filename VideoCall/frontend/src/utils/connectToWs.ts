@@ -2,6 +2,7 @@ import { io, Socket } from "socket.io-client";
 import store from "../store/store";
 import { setActiveUsers } from "../store/slices/userSlice";
 import { broadcastEvents } from "../lib/constants";
+import * as webRTCHandler from "./webRTCHandler";
 const SERVER_URL = "http://localhost:3000";
 
 let socket: Socket;
@@ -17,6 +18,10 @@ export const connectoToWs = () => {
     console.log(data.activeUsers);
   });
 
+  socket.on("pre-offer", (data) => {
+    webRTCHandler.handlePreOffer(data);
+  });
+
   // socket.on("user-leave", (socketId) => {
   //   const activeUsers = store.getState().user.activeUsers;
   //   const newActiveUsers = activeUsers.filter(
@@ -28,6 +33,10 @@ export const connectoToWs = () => {
 
 export const registerNewUser = (username: string) => {
   socket.emit("user-join", { username, socketId: socket.id });
+};
+
+export const sendPreOffer = (data) => {
+  socket.emit("pre-offer", data);
 };
 
 const handleBroadCastEvent = (data) => {

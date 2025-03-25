@@ -5,6 +5,8 @@ const initialState = {
   localStream: null,
   remoteStream: null,
   callState: callStates.CALL_UNAVILABLE,
+  callingDialogVisible: false,
+  callingUsername: "",
 };
 
 const webRTCSlice = createSlice({
@@ -21,9 +23,20 @@ const webRTCSlice = createSlice({
     setCallState: (state, action) => {
       state.callState = action.payload;
     },
+    setCallingDialogVisible: (state, action) => {
+      state.callingDialogVisible = action.payload;
+    },
+    setCallingUsername: (state, action) => {
+      state.callingUsername = action.payload;
+    },
   },
 });
 
-export const { setLocalStream, setRemoteStream, setCallState } =
-  webRTCSlice.actions;
+export const {
+  setLocalStream,
+  setRemoteStream,
+  setCallState,
+  setCallingUsername,
+  setCallingDialogVisible,
+} = webRTCSlice.actions;
 export default webRTCSlice.reducer;

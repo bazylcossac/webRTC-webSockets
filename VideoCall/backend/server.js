@@ -45,4 +45,12 @@ io.on("connection", (socket) => {
       activeUsers: peers,
     });
   });
+
+  socket.on("pre-offer", (data) => {
+    console.log("preoffer handled");
+    io.to(data.calle.socketId).emit("pre-offer", {
+      callerUsername: data.caller.username,
+      callerSocketId: socket.id,
+    });
+  });
 });
