@@ -1,8 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { callStates } from "../../lib/constants";
 
 const initialState = {
   localStream: null,
   remoteStream: null,
+  callState: callStates.CALL_UNAVILABLE,
 };
 
 const webRTCSlice = createSlice({
@@ -16,8 +18,12 @@ const webRTCSlice = createSlice({
     setRemoteStream: (state, action) => {
       state.remoteStream = action.payload;
     },
+    setCallState: (state, action) => {
+      state.callState = action.payload;
+    },
   },
 });
 
-export const { setLocalStream, setRemoteStream } = webRTCSlice.actions;
+export const { setLocalStream, setRemoteStream, setCallState } =
+  webRTCSlice.actions;
 export default webRTCSlice.reducer;

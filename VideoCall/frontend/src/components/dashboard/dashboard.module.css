@@ -17,3 +17,34 @@
   flex-direction: column;
   gap: 5px;
 }
+
+.localStreamVideoContainer {
+  width: 150px;
+  position: absolute;
+  right: 50px;
+  padding: 10px;
+}
+
+.localStreamVideo {
+  height: 150px;
+  border-radius: 10px;
+  z-index: 10;
+  position: relative;
+}
+
+.localStreamVideo:hover {
+  cursor: pointer;
+  filter: brightness(70%);
+}
+
+.remotStreamVideoContainer {
+  width: 100%;
+  height: 100%;
+  background-color: black;
+}
+
+.remoteStreamVideo {
+  transform: rotateY(180deg);
+  height: 100%;
+  width: 100%;
+}

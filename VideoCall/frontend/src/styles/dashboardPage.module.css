@@ -5,6 +5,7 @@
 
 .mainContainer {
   width: 80%;
+  position: relative;
   height: 600px;
   background-color: rgb(122, 108, 217);
 }
@@ -18,5 +19,6 @@
 .usersListBottom {
   background-color: rgb(53, 53, 53);
   width: auto;
+  margin-top: auto;
   height: 200px;
 }
