@@ -22,13 +22,9 @@ export const connectoToWs = () => {
     webRTCHandler.handlePreOffer(data);
   });
 
-  // socket.on("user-leave", (socketId) => {
-  //   const activeUsers = store.getState().user.activeUsers;
-  //   const newActiveUsers = activeUsers.filter(
-  //     (user) => user.socketId !== socketId
-  //   );
-  //   store.dispatch(setActiveUsers(newActiveUsers));
-  // });
+  socket.on("pre-offer-answer", (data) => {
+    webRTCHandler.handlePreOfferAnswer(data);
+  });
 };
 
 export const registerNewUser = (username: string) => {
@@ -37,6 +33,10 @@ export const registerNewUser = (username: string) => {
 
 export const sendPreOffer = (data) => {
   socket.emit("pre-offer", data);
+};
+
+export const sendPreOfferAnswer = (data) => {
+  socket.emit("pre-offer-answer", data);
 };
 
 const handleBroadCastEvent = (data) => {

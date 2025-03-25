@@ -5,7 +5,7 @@ import {
   setCallingDialogVisible,
   setCallingUsername,
 } from "../store/slices/webrtcSlice";
-import { callStates } from "../lib/constants";
+import { callStates, preOfferAnswers } from "../lib/constants";
 import * as wss from "../utils/connectToWs";
 
 const constraints = {
@@ -23,22 +23,81 @@ export const getLocalStream = async () => {
   }
 };
 
-let connectedUserSocketId;
+let connectedUserSocketId: string | null;
 
 export const callToOtherUser = (calleDetials) => {
-  connectedUserSocketId = calleDetials.socketId;
+  connectedUserSocketId = calleDetials.socketId; // socketid that you want to connect with
   store.dispatch(setCallState(callStates.CALL_IN_PROGRESS));
   store.dispatch(setCallingDialogVisible(true));
+
+  // sends pre offer to websocket with
+  /// calle => user that we want to call with it's socketId and username
+  /// caller => us, with our username in state
+
   wss.sendPreOffer({
-    calle: calleDetials,
+    calle: calleDetials, // data of user that you want to connect with
     caller: {
-      username: store.getState().user.name,
+      username: store.getState().user.name, // your username
     },
   });
 };
 
 export const handlePreOffer = (data) => {
-  connectedUserSocketId = data.callerSocketId;
-  store.dispatch(setCallingUsername(data.callerUsername));
-  store.dispatch(setCallState(callStates.CALL_REQUESTED));
+  if (isCallIsPossible()) {
+    connectedUserSocketId = data.callerSocketId;
+    store.dispatch(setCallingUsername(data.callerUsername));
+    store.dispatch(setCallState(callStates.CALL_REQUESTED));
+  } else {
+    wss.sendPreOfferAnswer({
+      callerSocketId: data.callerSocketId,
+      answer: preOfferAnswers.CALL_UNAVAILABLE,
+    });
+  }
+};
+
+export const acceptIncomingCall = () => {
+  wss.sendPreOfferAnswer({
+    callerSocketId: connectedUserSocketId,
+    answer: preOfferAnswers.CALL_ACCEPTED,
+  });
+};
+
+export const declineIncomingCall = () => {
+  wss.sendPreOfferAnswer({
+    callerSocketId: connectedUserSocketId,
+    answer: preOfferAnswers.CALL_REJECTED,
+  });
+
+  resetCallData();
+};
+
+export const handlePreOfferAnswer = (data) => {
+  if (data.answer === preOfferAnswers.CALL_ACCEPTED) {
+    // send webrtc
+  } else {
+    let rejectionReason;
+    if (data.answer === preOfferAnswers.CALL_UNAVAILABLE) {
+      rejectionReason = "User is not available";
+    }
+    if (data.answer === preOfferAnswers.CALL_REJECTED) {
+      rejectionReason = "User rejected";
+    }
+    // return rejectionReason;
+  }
+};
+
+export const isCallIsPossible = () => {
+  if (
+    store.getState().webrtc.localStream === null ||
+    store.getState().webrtc.callState !== callStates.CALL_AVAILABLE
+  ) {
+    return false;
+  } else {
+    return true;
+  }
+};
+
+export const resetCallData = () => {
+  connectedUserSocketId = null;
+  store.dispatch(setCallState(callStates.CALL_AVAILABLE));
 };

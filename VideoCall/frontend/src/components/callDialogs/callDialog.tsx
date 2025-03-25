@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { callStates } from "../../lib/constants";
 import "./callDialot.module.css";
 import IncomingCall from "./incomingCall";
+import CallingDialog from "./callingDialog";
 
 function CallDialog() {
   const disptach = useDispatch();
@@ -16,11 +17,14 @@ function CallDialog() {
       </>
     );
   }
-  // if (callState === callStates.) {
 
-  // }
-
-  //   return <div>callDialog</div>;
+  if (callState === callStates.CALL_IN_PROGRESS) {
+    return (
+      <>
+        <CallingDialog />
+      </>
+    );
+  }
 }
 
 export default CallDialog;

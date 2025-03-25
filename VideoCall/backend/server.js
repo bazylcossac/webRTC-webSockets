@@ -39,7 +39,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     const newPeers = peers.filter((users) => users.socketId !== socket.id);
     peers = newPeers;
-    // io.sockets.emit("user-leave", socket.id);
+
     io.sockets.emit("broadcast", {
       eventType: broadcastEvents.ACTIVE_USERS,
       activeUsers: peers,
@@ -47,10 +47,15 @@ io.on("connection", (socket) => {
   });
 
   socket.on("pre-offer", (data) => {
-    console.log("preoffer handled");
+    console.log("data");
     io.to(data.calle.socketId).emit("pre-offer", {
-      callerUsername: data.caller.username,
-      callerSocketId: socket.id,
+      callerUsername: data.caller.username, // your name
+      callerSocketId: socket.id, // your socketid
+    });
+  });
+  socket.on("pre-offer-answer", (data) => {
+    io.to(data.callerSocketId).emit("pre-offer-answer", {
+      answer: data.answer,
     });
   });
 });
