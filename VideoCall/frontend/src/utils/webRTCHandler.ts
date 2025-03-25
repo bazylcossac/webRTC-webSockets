@@ -4,6 +4,7 @@ import {
   setCallState,
   setCallingDialogVisible,
   setCallingUsername,
+  setCallIfRejected,
 } from "../store/slices/webrtcSlice";
 import { callStates, preOfferAnswers } from "../lib/constants";
 import * as wss from "../utils/connectToWs";
@@ -72,6 +73,7 @@ export const declineIncomingCall = () => {
 };
 
 export const handlePreOfferAnswer = (data) => {
+  store.dispatch(setCallingDialogVisible(false));
   if (data.answer === preOfferAnswers.CALL_ACCEPTED) {
     // send webrtc
   } else {
@@ -80,8 +82,14 @@ export const handlePreOfferAnswer = (data) => {
       rejectionReason = "User is not available";
     }
     if (data.answer === preOfferAnswers.CALL_REJECTED) {
+      console.log(data.answer);
       rejectionReason = "User rejected";
+      console.log(rejectionReason);
     }
+
+    store.dispatch(
+      setCallIfRejected({ rejected: true, answer: rejectionReason })
+    );
     // return rejectionReason;
   }
 };

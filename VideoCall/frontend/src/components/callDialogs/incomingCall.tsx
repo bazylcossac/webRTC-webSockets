@@ -1,13 +1,17 @@
 import { useSelector } from "react-redux";
 import "./callDialot.module.css";
+import {
+  acceptIncomingCall,
+  declineIncomingCall,
+} from "../../utils/webRTCHandler";
 
 function IncomingCall() {
   const callingUsername = useSelector((state) => state.webrtc.callingUsername);
   const handleAcceptCall = () => {
-    /// actions
+    acceptIncomingCall();
   };
   const handleRejectCall = () => {
-    /// actions
+    declineIncomingCall();
   };
 
   return (

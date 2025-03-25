@@ -7,6 +7,10 @@ const initialState = {
   callState: callStates.CALL_UNAVILABLE,
   callingDialogVisible: false,
   callingUsername: "",
+  callRejected: {
+    rejected: false,
+    answer: "",
+  },
 };
 
 const webRTCSlice = createSlice({
@@ -29,6 +33,12 @@ const webRTCSlice = createSlice({
     setCallingUsername: (state, action) => {
       state.callingUsername = action.payload;
     },
+    setCallIfRejected: (state, action) => {
+      state.callRejected = {
+        rejected: action.payload.rejected,
+        answer: action.payload.answer,
+      };
+    },
   },
 });
 
@@ -38,5 +48,6 @@ export const {
   setCallState,
   setCallingUsername,
   setCallingDialogVisible,
+  setCallIfRejected,
 } = webRTCSlice.actions;
 export default webRTCSlice.reducer;

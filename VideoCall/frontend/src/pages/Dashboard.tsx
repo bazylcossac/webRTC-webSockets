@@ -4,12 +4,24 @@ import styles from "../styles/dashboardPage.module.css";
 import { getLocalStream } from "../utils/webRTCHandler";
 import DashboardLocalVideo from "../components/dashboard/dashboardLocalVideo";
 import DashboardRemoteVideo from "../components/dashboard/dashboardRemoteVideo";
-import CallDialog from "../components/callDialogs/callDialog";
+
+import { useSelector } from "react-redux";
+import CallingDialog from "../components/callDialogs/callingDialog";
+import RejectedDialog from "../components/callDialogs/rejectedDialog";
+import { callStates } from "../lib/constants";
+import IncomingCall from "../components/callDialogs/incomingCall";
 
 function Dashboard() {
+  const callState = useSelector((state) => state.webrtc.callState);
+  const callRejected = useSelector((state) => state.webrtc.callRejected);
+  const callingDialogVisible = useSelector(
+    (state) => state.webrtc.callingDialogVisible
+  );
   useEffect(() => {
     getLocalStream();
   }, []);
+
+  console.log(callRejected);
 
   return (
     <section>
@@ -17,7 +29,9 @@ function Dashboard() {
         <div className={styles.mainContainer}>
           <DashboardLocalVideo />
           <DashboardRemoteVideo />
-          <CallDialog />
+          {callingDialogVisible && <CallingDialog />}
+          {callRejected.rejected && <RejectedDialog />}
+          {callState === callStates.CALL_REQUESTED && <IncomingCall />}
         </div>
 
         <div className={styles.usersListRight}>
