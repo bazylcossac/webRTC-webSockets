@@ -2,6 +2,7 @@ import { io, Socket } from "socket.io-client";
 import store from "../store/store";
 import { setActiveUsers } from "../store/slices/userSlice";
 const serverUrl = "http://localhost:3000";
+import { handlePreOffer } from "./webRTCHandler";
 
 let socket: Socket;
 
@@ -13,6 +14,11 @@ export const wssConnection = () => {
     handleUsers(data);
   });
 
+  socket.on("pre-offer", (data) => {
+    console.log(data);
+    handlePreOffer(data);
+  });
+
   socket.on("user-left", (data) => {
     handleUsers(data);
   });
@@ -20,6 +26,13 @@ export const wssConnection = () => {
 
 export const handleRegisterUser = (username: string) => {
   socket.emit("user-join", { username, socketId: socket.id });
+};
+
+export const callToUser = (calleDetials) => {
+  socket.emit("pre-offer", {
+    callerUsername: store.getState().user.name,
+    calle: calleDetials,
+  });
 };
 
 const handleUsers = (data) => {

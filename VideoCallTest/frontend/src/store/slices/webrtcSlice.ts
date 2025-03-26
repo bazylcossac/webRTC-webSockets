@@ -3,6 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   localStream: "",
   remoteStream: "",
+  callState: "",
+  callerUsername: "",
 };
 
 const webrtcSlice = createSlice({
@@ -15,8 +17,15 @@ const webrtcSlice = createSlice({
     setRemoteStream: (state, action) => {
       state.remoteStream = action.payload;
     },
+    setCallState: (state, action) => {
+      state.callState = action.payload;
+    },
+    setCallerUsername: (state, action) => {
+      state.callerUsername = action.payload;
+    },
   },
 });
 
-export const { setLocalStream, setRemoteStream } = webrtcSlice.actions;
+export const { setLocalStream, setRemoteStream, setCallState, setCallerUsername } =
+  webrtcSlice.actions;
 export default webrtcSlice.reducer;

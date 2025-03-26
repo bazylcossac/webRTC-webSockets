@@ -5,7 +5,7 @@ function LocalStreamContainer() {
   const remoteStream = useSelector((state) => state.webrtc.remoteStream);
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
 
-  useEffect(() => {
+useEffect(() => {
     if (remoteStream) {
       remoteVideoRef.current!.srcObject = remoteStream;
     }

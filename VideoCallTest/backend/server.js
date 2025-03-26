@@ -29,6 +29,13 @@ io.on("connection", (socket) => {
     io.sockets.emit("user-join", users);
   });
 
+  socket.on("pre-offer", (data) => {
+    socket.to(data.calle.calleSocketId).emit("pre-offer", {
+      callerName: data.callerUsername,
+      callerSocketId: socket.id,
+    });
+  });
+
   socket.on("disconnect", () => {
     const newUsers = users.filter((user) => user.socketId !== socket.id);
     users = newUsers;
