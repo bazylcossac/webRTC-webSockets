@@ -1,16 +1,18 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { setUsername } from "../store/slices/userSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { handleRegisterUser } from "../utils/wssConnection";
 
 function Login() {
   const [user, setUser] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const onSubmit = (e) => {
+  const onSubmit = (e: FormEvent) => {
     e.preventDefault();
     dispatch(setUsername(user));
+    handleRegisterUser(user);
     navigate("/dashboard");
   };
 

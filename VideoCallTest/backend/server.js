@@ -16,6 +16,24 @@ const io = socket(server, {
   },
 });
 
+let users = [];
+
 io.on("connection", (socket) => {
   console.log("connected user: ", socket.id);
+  socket.on("user-join", (data) => {
+    users.push({
+      username: data.username,
+      socketId: data.socketId,
+    });
+    console.log(users);
+    io.sockets.emit("user-join", users);
+  });
+
+  socket.on("disconnect", () => {
+    const newUsers = users.filter((user) => user.socketId !== socket.id);
+    users = newUsers;
+    console.log(users);
+
+    io.sockets.emit("user-left", users);
+  });
 });
