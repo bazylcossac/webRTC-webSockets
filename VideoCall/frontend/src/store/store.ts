@@ -9,8 +9,8 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ["webrtc/setLocalStream"],
-        ignoredPaths: ["webrtc.localStream"],
+        ignoredActions: ["webrtc/setLocalStream", "webrtc/setRemoteStream"],
+        ignoredPaths: ["webrtc.localStream", "webrtc.remoteStream"],
       },
     }),
 });

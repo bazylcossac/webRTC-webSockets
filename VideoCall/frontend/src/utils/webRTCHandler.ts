@@ -5,6 +5,7 @@ import {
   setCallingDialogVisible,
   setCallingUsername,
   setCallIfRejected,
+  setRemoteStream,
 } from "../store/slices/webrtcSlice";
 import { callStates, preOfferAnswers } from "../lib/constants";
 import * as wss from "../utils/connectToWs";
@@ -36,6 +37,7 @@ const createPeerConection = () => {
 
   peerConection.ontrack = ({ streams: [stream] }) => {
     // store remote stream
+    store.dispatch(setRemoteStream(stream));
   };
 
   peerConection.onicecandidate = (event) => {
@@ -44,6 +46,11 @@ const createPeerConection = () => {
         candidate: event.candidate,
         connectedUserSocketId,
       });
+    }
+  };
+  peerConection.onconnectionstatechange = (event) => {
+    if (peerConection!.connectionState === "connected") {
+      console.log("Succesfully connected to other peer ");
     }
   };
 };
@@ -58,7 +65,7 @@ export const sendOffer = async () => {
 };
 
 export const handleOffer = async (data) => {
-  await peerConection!.createRemoteDescription(data.offer);
+  await peerConection!.setRemoteDescription(data.offer);
   const answer = await peerConection!.createAnswer();
   await peerConection!.setLocalDescription(answer);
   wss.sendWebRTCAnswer({
@@ -126,6 +133,8 @@ export const acceptIncomingCall = () => {
     callerSocketId: connectedUserSocketId,
     answer: preOfferAnswers.CALL_ACCEPTED,
   });
+
+  store.dispatch(setCallState(callStates.CALL_IN_PROGRESS));
 };
 
 export const declineIncomingCall = () => {
