@@ -14,17 +14,82 @@ const constraints = {
   audio: true,
 };
 
+const configuration = {
+  iceServers: [
+    {
+      urls: "stun:stun.l.google.com:19302",
+    },
+  ],
+};
+
+let connectedUserSocketId: string | null;
+let peerConection;
+
+const createPeerConection = () => {
+  peerConection = new RTCPeerConnection(configuration);
+  const localStream = store.getState().webrtc.localStream as MediaStream | null;
+  if (!localStream) return;
+
+  for (const track of localStream.getTracks()) {
+    peerConection.addTrack(track, localStream);
+  }
+
+  peerConection.ontrack = ({ streams: [stream] }) => {
+    // store remote stream
+  };
+
+  peerConection.onicecandidate = (event) => {
+    if (event.candidate) {
+      wss.sednWebRTCCandidate({
+        candidate: event.candidate,
+        connectedUserSocketId,
+      });
+    }
+  };
+};
+
+export const sendOffer = async () => {
+  const offer = await peerConection!.createOffer();
+  await peerConection!.setLocalDescription(offer);
+  wss.sendWebRTCOffer({
+    calleSocketId: connectedUserSocketId,
+    offer,
+  });
+};
+
+export const handleOffer = async (data) => {
+  await peerConection!.createRemoteDescription(data.offer);
+  const answer = await peerConection!.createAnswer();
+  await peerConection!.setLocalDescription(answer);
+  wss.sendWebRTCAnswer({
+    callerSocketId: connectedUserSocketId,
+    answer,
+  });
+};
+
+export const handleAnswer = async (data) => {
+  await peerConection!.setRemoteDescription(data.answer);
+};
+
 export const getLocalStream = async () => {
+  /// 1. users enter Dashboard page
   try {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     store.dispatch(setLocalStream(stream));
     store.dispatch(setCallState(callStates.CALL_AVAILABLE));
+    createPeerConection();
   } catch (error) {
     throw new Error(`Failed to get user media stream | ${error}`);
   }
 };
 
-let connectedUserSocketId: string | null;
+export const handeCandidate = async (data) => {
+  try {
+    await peerConection!.addIceCandidate(data.candidate);
+  } catch (error) {
+    console.error(`Error on creating ice candidates | ${error}`);
+  }
+};
 
 export const callToOtherUser = (calleDetials) => {
   connectedUserSocketId = calleDetials.socketId; // socketid that you want to connect with
@@ -75,7 +140,7 @@ export const declineIncomingCall = () => {
 export const handlePreOfferAnswer = (data) => {
   store.dispatch(setCallingDialogVisible(false));
   if (data.answer === preOfferAnswers.CALL_ACCEPTED) {
-    // send webrtc
+    sendOffer();
   } else {
     let rejectionReason;
     if (data.answer === preOfferAnswers.CALL_UNAVAILABLE) {
@@ -90,6 +155,7 @@ export const handlePreOfferAnswer = (data) => {
     store.dispatch(
       setCallIfRejected({ rejected: true, answer: rejectionReason })
     );
+    resetCallData();
     // return rejectionReason;
   }
 };

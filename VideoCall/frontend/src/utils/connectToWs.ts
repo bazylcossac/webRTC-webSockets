@@ -25,10 +25,30 @@ export const connectoToWs = () => {
   socket.on("pre-offer-answer", (data) => {
     webRTCHandler.handlePreOfferAnswer(data);
   });
+
+  socket.on("webRTC-offer", (data) => {
+    webRTCHandler.handleOffer(data);
+  });
+  socket.on("webRTC-answer", (data) => {
+    webRTCHandler.handleAnswer(data);
+  });
+
+  socket.on("webRTC-candidate", (data) => {
+    webRTCHandler.handeCandidate(data)
+  });
 };
 
 export const registerNewUser = (username: string) => {
   socket.emit("user-join", { username, socketId: socket.id });
+};
+
+export const sendWebRTCOffer = (data) => {
+  socket.emit("webRTC-offer", data);
+  // webRTCHandler.handlePreOffer(data);
+};
+
+export const sendWebRTCAnswer = (data) => {
+  socket.emit("webRTC-answer", data);
 };
 
 export const sendPreOffer = (data) => {
@@ -37,6 +57,10 @@ export const sendPreOffer = (data) => {
 
 export const sendPreOfferAnswer = (data) => {
   socket.emit("pre-offer-answer", data);
+};
+
+export const sednWebRTCCandidate = (data) => {
+  socket.emit("webRTC-candidate", data);
 };
 
 const handleBroadCastEvent = (data) => {
