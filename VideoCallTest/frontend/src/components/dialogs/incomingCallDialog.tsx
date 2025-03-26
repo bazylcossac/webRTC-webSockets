@@ -1,13 +1,19 @@
 import { callStates } from "../../constants";
 import { setCallState } from "../../store/slices/webrtcSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { declineIncomingCall } from "../../utils/webRTCHandler";
+import {
+  acceptIncomingCall,
+  declineIncomingCall,
+} from "../../utils/webRTCHandler";
 
 function IncomingCall() {
   const dispatch = useDispatch();
   const callerUsername = useSelector((state) => state.webrtc.callerUsername);
 
-  const handleAcceptCall = () => {};
+  const handleAcceptCall = () => {
+    acceptIncomingCall();
+    /// make that when users is in thecall there is no chance to call to him
+  };
   const handleRejectCall = () => {
     declineIncomingCall();
     dispatch(setCallState(callStates.CALL_AVAILABLE));

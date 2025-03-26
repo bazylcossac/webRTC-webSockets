@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 function LocalStreamContainer() {
   const localStream = useSelector((state) => state.webrtc.localStream);
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
-
+  console.log(localStream);
   useEffect(() => {
     if (localStream) {
       localVideoRef.current!.srcObject = localStream;

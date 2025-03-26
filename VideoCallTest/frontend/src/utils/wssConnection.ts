@@ -2,7 +2,14 @@ import { io, Socket } from "socket.io-client";
 import store from "../store/store";
 import { setActiveUsers } from "../store/slices/userSlice";
 const serverUrl = "http://localhost:3000";
-import { handlePreOffer, handlePreOfferAnswer } from "./webRTCHandler";
+import {
+  handleAnswer,
+  handleCandidate,
+  handleOffer,
+  handlePreOffer,
+  handlePreOfferAnswer,
+} from "./webRTCHandler";
+import { setCallingDialogVisible } from "../store/slices/webrtcSlice";
 
 let socket: Socket;
 
@@ -23,6 +30,18 @@ export const wssConnection = () => {
     handlePreOfferAnswer(data);
   });
 
+  socket.on("webRTC-offer", (offer) => {
+    handleOffer(offer);
+  });
+
+  socket.on("webRTC-answer", (answer) => {
+    handleAnswer(answer);
+  });
+
+  socket.on("webRTC-candidate", (candidate) => {
+    handleCandidate(candidate);
+  });
+
   socket.on("user-left", (data) => {
     handleUsers(data);
   });
@@ -41,6 +60,19 @@ export const callToUser = (calleDetials) => {
     callerUsername: store.getState().user.name,
     calle: calleDetials,
   });
+  store.dispatch(setCallingDialogVisible(true));
+};
+
+export const sendWebRTCOffer = (data) => {
+  socket.emit("webRTC-offer", data);
+};
+
+export const sendWebRTCAnswer = (data) => {
+  socket.emit("webRTC-answer", data);
+};
+
+export const sendWebRTCCandidate = (data) => {
+  socket.emit("webRTC-candidate", data);
 };
 
 const handleUsers = (data) => {

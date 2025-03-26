@@ -4,8 +4,8 @@ import { useSelector } from "react-redux";
 function LocalStreamContainer() {
   const remoteStream = useSelector((state) => state.webrtc.remoteStream);
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
-
-useEffect(() => {
+  console.log(remoteStream);
+  useEffect(() => {
     if (remoteStream) {
       remoteVideoRef.current!.srcObject = remoteStream;
     }

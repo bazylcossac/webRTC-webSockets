@@ -39,8 +39,21 @@ io.on("connection", (socket) => {
   socket.on("pre-offer-answer", (data) => {
     socket.to(data.callerSocketId).emit("pre-offer-answer", {
       answer: data.answer,
+      socketId: socket.id,
     });
   });
+
+  socket.on("webRTC-offer", (data) => {
+    socket.to(data.calleSocketId).emit("webRTC-offer", data.offer);
+  });
+
+  socket.on("webRTC-answer", (data) => {
+    socket.to(data.callerSocketId).emit("webRTC-answer", data.answer);
+  });
+
+  socket.on("webRTC-candidate", data => {
+    socket.to(data.callerSocketId).emit("webRTC-candidate", data.candidate)
+  })
 
   socket.on("disconnect", () => {
     const newUsers = users.filter((user) => user.socketId !== socket.id);

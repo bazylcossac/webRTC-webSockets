@@ -13,6 +13,9 @@ import RejectedDialog from "../components/dialogs/callRejectedDialog";
 function Dashboard() {
   const callState = useSelector((state) => state.webrtc.callState);
   const callIfRejected = useSelector((state) => state.webrtc.callIfRejected);
+  const callingDialogVisible = useSelector(
+    (state) => state.webrtc.callingDialogVisible
+  );
 
   console.log(callIfRejected);
   useEffect(() => {
@@ -22,7 +25,7 @@ function Dashboard() {
   return (
     <div>
       {callState === callStates.CALL_REQUESTED && <IncomingCall />}
-      {callState === callStates.CALL_IN_PROGRESS && <CallingDialog />}
+      {callingDialogVisible && <CallingDialog />}
       {callIfRejected.reject && (
         <RejectedDialog reason={callIfRejected.answer} />
       )}
