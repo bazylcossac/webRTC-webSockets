@@ -1,14 +1,19 @@
-import { useSelector } from "react-redux";
+import { useEffect } from "react";
+
+import { getLocalStream } from "../utils/webRTCHandler";
+import LocalStreamContainer from "../components/localStreamContainer";
+import RemoteStreamContainer from "../components/remoteStreamContainer";
+import ActiveUsers from "../components/activeUsers";
 function Dashboard() {
-  const activeUsers = useSelector((state) => state.user.activeUsers);
+  useEffect(() => {
+    getLocalStream();
+  }, []);
 
   return (
     <div>
-      {activeUsers?.map((user, i) => (
-        <p className="text-black" key={i}>
-          {user.username}
-        </p>
-      ))}
+      <LocalStreamContainer />
+      <RemoteStreamContainer />
+      <ActiveUsers />
     </div>
   );
 }
