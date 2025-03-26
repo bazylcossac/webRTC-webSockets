@@ -165,7 +165,7 @@ export const handlePreOfferAnswer = (data) => {
       setCallIfRejected({ rejected: true, answer: rejectionReason })
     );
     resetCallData();
-    // return rejectionReason;
+
   }
 };
 

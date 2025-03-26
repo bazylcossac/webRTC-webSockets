@@ -1,5 +1,3 @@
-import "./callDialot.module.css";
-
 function CallingDialog() {
   return (
     <div className="direct_calling_dialog">

@@ -1,10 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { callStates } from "../../constants";
 
 const initialState = {
   localStream: "",
   remoteStream: "",
-  callState: "",
+  callState: callStates.CALL_AVAILABLE,
+  callingDialogVisible: false,
   callerUsername: "",
+  callIfRejected: {
+    reject: false,
+    answer: "",
+  },
 };
 
 const webrtcSlice = createSlice({
@@ -23,9 +29,20 @@ const webrtcSlice = createSlice({
     setCallerUsername: (state, action) => {
       state.callerUsername = action.payload;
     },
+    setCallIfRejected: (state, action) => {
+      state.callIfRejected = {
+        reject: action.payload.reject,
+        answer: action.payload.answer,
+      };
+    },
   },
 });
 
-export const { setLocalStream, setRemoteStream, setCallState, setCallerUsername } =
-  webrtcSlice.actions;
+export const {
+  setLocalStream,
+  setRemoteStream,
+  setCallState,
+  setCallerUsername,
+  setCallIfRejected,
+} = webrtcSlice.actions;
 export default webrtcSlice.reducer;

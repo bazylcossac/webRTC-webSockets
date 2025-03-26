@@ -2,7 +2,7 @@ import { io, Socket } from "socket.io-client";
 import store from "../store/store";
 import { setActiveUsers } from "../store/slices/userSlice";
 const serverUrl = "http://localhost:3000";
-import { handlePreOffer } from "./webRTCHandler";
+import { handlePreOffer, handlePreOfferAnswer } from "./webRTCHandler";
 
 let socket: Socket;
 
@@ -19,6 +19,10 @@ export const wssConnection = () => {
     handlePreOffer(data);
   });
 
+  socket.on("pre-offer-answer", (data) => {
+    handlePreOfferAnswer(data);
+  });
+
   socket.on("user-left", (data) => {
     handleUsers(data);
   });
@@ -26,6 +30,10 @@ export const wssConnection = () => {
 
 export const handleRegisterUser = (username: string) => {
   socket.emit("user-join", { username, socketId: socket.id });
+};
+
+export const sendPreOfferAnswer = (data) => {
+  socket.emit("pre-offer-answer", data);
 };
 
 export const callToUser = (calleDetials) => {

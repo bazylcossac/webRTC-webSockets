@@ -1,9 +1,7 @@
-import "./callDialot.module.css";
-
-function RejectedDialog() {
+function RejectedDialog({ reason }: { reason: string }) {
   return (
-    <div className="call_rejected_dialog">
-      <p>Call rejected</p>
+    <div>
+      <p>{reason}</p>
     </div>
   );
 }

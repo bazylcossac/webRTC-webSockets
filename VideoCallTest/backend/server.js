@@ -36,6 +36,12 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on("pre-offer-answer", (data) => {
+    socket.to(data.callerSocketId).emit("pre-offer-answer", {
+      answer: data.answer,
+    });
+  });
+
   socket.on("disconnect", () => {
     const newUsers = users.filter((user) => user.socketId !== socket.id);
     users = newUsers;

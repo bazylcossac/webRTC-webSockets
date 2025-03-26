@@ -1,17 +1,19 @@
 import {
   setCallerUsername,
+  setCallIfRejected,
   setCallState,
   setLocalStream,
 } from "../store/slices/webrtcSlice";
 import store from "../store/store";
-import { callStates } from "../constants";
+import { callStates, preOfferAnswers } from "../constants";
+import { sendPreOfferAnswer } from "./wssConnection";
 
 const constraints = {
   video: true,
   audio: true,
 };
 
-let connectedUserSocketId;
+let connectedUserSocketId: string | null;
 
 export const getLocalStream = async () => {
   try {
@@ -31,6 +33,28 @@ export const handlePreOffer = (data) => {
   }
 };
 
+export const handlePreOfferAnswer = (data) => {
+  if (data.answer === preOfferAnswers.CALL_ACCEPTED) {
+    console.log("Call accepted");
+    store.dispatch(setCallIfRejected({ reject: false, answer: "" }));
+  } else {
+    let rejectionReason;
+
+    if (data.answer === preOfferAnswers.CALL_UNAVAILABLE) {
+      rejectionReason = "Couldn't connect to user. Its 90% our fault";
+    }
+    if (data.answer === preOfferAnswers.CALL_REJECTED) {
+      rejectionReason = "User dont want to talk right now, how sad ;(";
+    }
+
+    store.dispatch(
+      setCallIfRejected({ reject: true, answer: rejectionReason })
+    );
+  }
+
+  resetCallData();
+};
+
 const isCallPossible = () => {
   if (
     store.getState().webrtc.localStream === null ||
@@ -40,4 +64,23 @@ const isCallPossible = () => {
   } else {
     return true;
   }
+};
+
+export const declineIncomingCall = () => {
+  sendPreOfferAnswer({
+    answer: preOfferAnswers.CALL_REJECTED,
+    callerSocketId: connectedUserSocketId,
+  });
+};
+
+export const acceptIncomingCall = () => {
+  sendPreOfferAnswer({
+    answer: preOfferAnswers.CALL_ACCEPTED,
+    callerSocketId: connectedUserSocketId,
+  });
+};
+
+const resetCallData = () => {
+  connectedUserSocketId = null;
+  store.dispatch(setCallState(callStates.CALL_AVAILABLE));
 };
