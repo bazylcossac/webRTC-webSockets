@@ -53,10 +53,10 @@ const createPeerConection = () => {
     peerConection.addTrack(track, localStream);
   }
 
-  peerConection.ontrack = ({ streams: [stream] }) => {
+  peerConection.ontrack = (event) => {
     /// store remote stream
 
-    store.dispatch(setRemoteStream(stream));
+    store.dispatch(setRemoteStream(event.streams[0]));
   };
 
   peerConection.onicecandidate = (event) => {
