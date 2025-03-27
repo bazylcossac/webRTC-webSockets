@@ -40,7 +40,7 @@ export const connectoToWs = () => {
   socket.on("close-connection", (data) => {
     console.log(data);
     console.log("CONNECTION CLOSE");
-    handleCloseConnection();
+    handleCloseConnection()
   });
 };
 

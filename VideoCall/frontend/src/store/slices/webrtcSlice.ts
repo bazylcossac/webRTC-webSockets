@@ -45,13 +45,22 @@ const webRTCSlice = createSlice({
     setLocalMicrophoneEnabled: (state, action) => {
       state.localMicrophoneEnabled = action.payload;
       state.localStream!.getAudioTracks()[0].enabled = action.payload;
-      console.log(state.localStream!.getAudioTracks()[0].muted);
     },
     setLocalCameraEnabled: (state, action) => {
       state.localCameraEnabled = action.payload;
     },
     setLocalScreenShareEnabled: (state, action) => {
       state.localScreenShareEnabled = action.payload;
+    },
+    resetCallState: (state) => {
+      state.remoteStream = null;
+      state.localMicrophoneEnabled = true;
+      state.localCameraEnabled = true;
+      state.localStream!.getAudioTracks()[0].enabled = true;
+      state.callState = callStates.CALL_AVAILABLE;
+      state.callingDialogVisible = false;
+      state.callingUsername = "";
+      state.localScreenShareEnabled = false;
     },
   },
 });
@@ -66,5 +75,6 @@ export const {
   setLocalMicrophoneEnabled,
   setLocalCameraEnabled,
   setLocalScreenShareEnabled,
+  resetCallState
 } = webRTCSlice.actions;
 export default webRTCSlice.reducer;

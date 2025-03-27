@@ -7,6 +7,7 @@ import {
   setCallIfRejected,
   setRemoteStream,
   setLocalScreenShareEnabled,
+  resetCallState,
 } from "../store/slices/webrtcSlice";
 import { callStates, preOfferAnswers } from "../lib/constants";
 import * as wss from "../utils/connectToWs";
@@ -27,6 +28,7 @@ const configuration = {
 
 let connectedUserSocketId: string | null;
 let peerConection: RTCPeerConnection | null;
+let screenStream: MediaStream;
 
 const createPeerConection = () => {
   peerConection = new RTCPeerConnection(configuration);
@@ -92,7 +94,6 @@ export const getLocalStream = async () => {
   }
 };
 
-let screenStream: MediaStream;
 export const getScreenSahre = async () => {
   if (!store.getState().webrtc.localScreenShareEnabled) {
     try {
@@ -135,7 +136,7 @@ export const handeCandidate = async (data) => {
   }
 };
 
-export const callToOtherUser = (calleDetials) => {g
+export const callToOtherUser = (calleDetials) => {
   connectedUserSocketId = calleDetials.socketId; // socketid that you want to connect with
   store.dispatch(setCallState(callStates.CALL_IN_PROGRESS));
   store.dispatch(setCallingDialogVisible(true));
@@ -201,6 +202,17 @@ export const resetCallDataAfterDisconnect = () => {
   store.dispatch(setRemoteStream(null));
   createPeerConection();
   resetCallData();
+
+  const localStream = store.getState().webrtc.localStream;
+  if (localStream) {
+    localStream!.getVideoTracks()[0].enabled = true;
+    localStream!.getAudioTracks()[0].enabled = true;
+  }
+
+  if (store.getState().webrtc.localScreenShareEnabled) {
+    screenStream.getVideoTracks().forEach((track) => track.stop());
+  }
+  store.dispatch(resetCallState());
 };
 
 export const handlePreOfferAnswer = (data) => {
