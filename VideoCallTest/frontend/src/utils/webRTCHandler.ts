@@ -88,10 +88,7 @@ export const handlePreOffer = (data) => {
 
 export const handlePreOfferAnswer = (data) => {
   if (data.answer === preOfferAnswers.CALL_ACCEPTED) {
-    console.log("Call accepted");
-    console.log(data);
     sendOffer(data.socketId);
-
     store.dispatch(setCallIfRejected({ reject: false, answer: "" }));
   } else {
     let rejectionReason;

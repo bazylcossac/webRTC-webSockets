@@ -10,6 +10,7 @@ import CallingDialog from "../components/callDialogs/callingDialog";
 import RejectedDialog from "../components/callDialogs/rejectedDialog";
 import { callStates } from "../lib/constants";
 import IncomingCall from "../components/callDialogs/incomingCall";
+import ConversationButtons from "../components/ConversationButtons/ConversationButtons";
 
 function Dashboard() {
   const callState = useSelector((state) => state.webrtc.callState);
@@ -29,6 +30,7 @@ function Dashboard() {
         <div className={styles.mainContainer}>
           <DashboardLocalVideo />
           <DashboardRemoteVideo />
+          {callState === callStates.CALL_IN_PROGRESS && <ConversationButtons />}
           {callingDialogVisible && <CallingDialog />}
           {callRejected.rejected && <RejectedDialog />}
           {callState === callStates.CALL_REQUESTED && <IncomingCall />}
