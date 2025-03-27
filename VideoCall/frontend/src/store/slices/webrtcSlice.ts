@@ -2,11 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 import { callStates } from "../../lib/constants";
 
 const initialState = {
-  localStream: null,
+  localStream: null as MediaStream | null,
   remoteStream: null,
   callState: callStates.CALL_UNAVILABLE,
   callingDialogVisible: false,
   callingUsername: "",
+  localMicrophoneEnabled: true,
+  localCameraEnabled: true,
   callRejected: {
     rejected: false,
     answer: "",
@@ -39,6 +41,14 @@ const webRTCSlice = createSlice({
         answer: action.payload.answer,
       };
     },
+    setLocalMicrophoneEnabled: (state, action) => {
+      state.localMicrophoneEnabled = action.payload;
+      state.localStream!.getAudioTracks()[0].enabled = action.payload;
+      console.log(state.localStream!.getAudioTracks()[0].muted);
+    },
+    setLocalCameraEnabled: (state, action) => {
+      state.localCameraEnabled = action.payload;
+    },
   },
 });
 
@@ -49,5 +59,7 @@ export const {
   setCallingUsername,
   setCallingDialogVisible,
   setCallIfRejected,
+  setLocalMicrophoneEnabled,
+  setLocalCameraEnabled,
 } = webRTCSlice.actions;
 export default webRTCSlice.reducer;
