@@ -13,12 +13,16 @@ function LocalStreamContainer() {
 
   return (
     <>
-      <video
-        ref={remoteVideoRef}
-        autoPlay
-        playsInline
-        className="size-100 rounded-xl"
-      />
+      {remoteStream ? (
+        <video
+          ref={remoteVideoRef}
+          autoPlay
+          playsInline
+          className="size-100 rounded-xl"
+        />
+      ) : (
+        <div></div>
+      )}
     </>
   );
 }

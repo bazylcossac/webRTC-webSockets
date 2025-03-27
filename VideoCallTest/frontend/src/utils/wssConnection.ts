@@ -9,7 +9,11 @@ import {
   handlePreOffer,
   handlePreOfferAnswer,
 } from "./webRTCHandler";
-import { setCallingDialogVisible } from "../store/slices/webrtcSlice";
+import {
+  setCallingDialogVisible,
+  setCallState,
+} from "../store/slices/webrtcSlice";
+import { callStates } from "../constants";
 
 let socket: Socket;
 
@@ -51,22 +55,22 @@ export const handleRegisterUser = (username: string) => {
   socket.emit("user-join", { username, socketId: socket.id });
 };
 
-export const sendPreOfferAnswer = (data) => {
-  socket.emit("pre-offer-answer", data);
-};
-
 export const callToUser = (calleDetials) => {
+  store.dispatch(setCallingDialogVisible(true));
+  store.dispatch(setCallState(callStates.CALL_IN_PROGRESS));
+
   socket.emit("pre-offer", {
     callerUsername: store.getState().user.name,
     calle: calleDetials,
   });
-  store.dispatch(setCallingDialogVisible(true));
 };
 
+export const sendPreOfferAnswer = (data) => {
+  socket.emit("pre-offer-answer", data);
+};
 export const sendWebRTCOffer = (data) => {
   socket.emit("webRTC-offer", data);
 };
-
 export const sendWebRTCAnswer = (data) => {
   socket.emit("webRTC-answer", data);
 };

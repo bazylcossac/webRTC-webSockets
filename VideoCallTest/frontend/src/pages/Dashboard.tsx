@@ -10,6 +10,7 @@ import { callStates } from "../constants";
 import CallingDialog from "../components/dialogs/callingDialog";
 import IncomingCall from "../components/dialogs/incomingCallDialog";
 import RejectedDialog from "../components/dialogs/callRejectedDialog";
+import CallButtons from "../components/CallButtons.tsx/CallButtons";
 function Dashboard() {
   const callState = useSelector((state) => state.webrtc.callState);
   const callIfRejected = useSelector((state) => state.webrtc.callIfRejected);
@@ -32,6 +33,7 @@ function Dashboard() {
 
       <LocalStreamContainer />
       <RemoteStreamContainer />
+      {callState === callStates.CALL_IN_PROGRESS && <CallButtons />}
       <ActiveUsers />
     </div>
   );

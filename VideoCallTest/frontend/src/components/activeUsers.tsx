@@ -22,7 +22,6 @@ function ActiveUsers() {
           }}
         >
           {user.username}
-          {user.socketId}
         </div>
       ))}
     </div>

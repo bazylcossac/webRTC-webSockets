@@ -12,10 +12,11 @@ function IncomingCall() {
 
   const handleAcceptCall = () => {
     acceptIncomingCall();
-    /// make that when users is in thecall there is no chance to call to him
+    dispatch(setCallState(callStates.CALL_IN_PROGRESS));
   };
   const handleRejectCall = () => {
     declineIncomingCall();
+
     dispatch(setCallState(callStates.CALL_AVAILABLE));
   };
 

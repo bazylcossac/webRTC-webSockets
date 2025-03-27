@@ -120,6 +120,7 @@ export const handleOffer = async (offer) => {
 
 export const handleAnswer = async (answer) => {
   await peerConection!.setRemoteDescription(answer);
+  store.dispatch(setCallState(callStates.CALL_IN_PROGRESS));
 };
 
 export const sendOffer = async (calleSocketId: string) => {
@@ -154,6 +155,7 @@ export const declineIncomingCall = () => {
     answer: preOfferAnswers.CALL_REJECTED,
     callerSocketId: connectedUserSocketId,
   });
+  resetCallData();
 };
 
 export const acceptIncomingCall = () => {

@@ -77,4 +77,4 @@ export const {
   setLocalScreenShareEnabled,
   resetCallState
 } = webRTCSlice.actions;
-export default webRTCSlice.reducer;
+export fault webRTCSlice.reducer;
