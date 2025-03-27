@@ -7,6 +7,9 @@ const initialState = {
   callState: callStates.CALL_AVAILABLE,
   callingDialogVisible: false,
   callerUsername: "",
+  micEnabled: true,
+  cameraEnabled: true,
+  shareScreenEnabled: true,
   callIfRejected: {
     reject: false,
     answer: "",
@@ -38,6 +41,15 @@ const webrtcSlice = createSlice({
     setCallingDialogVisible: (state, action) => {
       state.callingDialogVisible = action.payload;
     },
+    setMicEnabled: (state, action) => {
+      state.micEnabled = action.payload;
+    },
+    setCameraEnabled: (state, action) => {
+      state.cameraEnabled = action.payload;
+    },
+    setShareScreenEnabled: (state, action) => {
+      state.shareScreenEnabled = action.payload;
+    },
   },
 });
 
@@ -48,5 +60,8 @@ export const {
   setCallerUsername,
   setCallIfRejected,
   setCallingDialogVisible,
+  setMicEnabled,
+  setCameraEnabled,
+  setShareScreenEnabled,
 } = webrtcSlice.actions;
 export default webrtcSlice.reducer;
