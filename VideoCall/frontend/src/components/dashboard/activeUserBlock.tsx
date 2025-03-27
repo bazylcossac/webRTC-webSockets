@@ -1,7 +1,8 @@
+import { callStates } from "../../lib/constants";
 import { setCallIfRejected } from "../../store/slices/webrtcSlice";
 import { callToOtherUser } from "../../utils/webRTCHandler";
 import styles from "../dashboard/dashboard.module.css";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 function ActiveUserBlock({
   socketId,
@@ -11,11 +12,14 @@ function ActiveUserBlock({
   name: string;
 }) {
   const dispatch = useDispatch();
+  const callState = useSelector((state) => state.webrtc.callState);
 
   const handleListItemPressed = () => {
     const calleDetails = { socketId, name };
     dispatch(setCallIfRejected({ rejected: false, answer: "" }));
-    callToOtherUser(calleDetails);
+    if (callState === callStates.CALL_AVAILABLE) {
+      callToOtherUser(calleDetails);
+    }
   };
 
   return (
