@@ -5,6 +5,7 @@ import {
   setLocalCameraEnabled,
   setLocalMicrophoneEnabled,
 } from "../../store/slices/webrtcSlice";
+import { getScreenSahre } from "../../utils/webRTCHandler";
 
 function ConversationButtons() {
   const dispatch = useDispatch();
@@ -29,6 +30,10 @@ function ConversationButtons() {
     localStream.getVideoTracks()[0].enabled = !cameraEnabled;
   };
 
+  const handleScreeenSharing = () => {
+    getScreenSahre();
+  };
+
   return (
     <div className={styles.buttonContainer}>
       <button className={styles.button} onClick={handleLocalMicrophoneEnabled}>
@@ -37,7 +42,9 @@ function ConversationButtons() {
       <button className={styles.button} onClick={handleLocalCameraEnabled}>
         Camera
       </button>
-      <button className={styles.button}>Share screen</button>
+      <button className={styles.button} onClick={handleScreeenSharing}>
+        Share screen
+      </button>
       <button className={styles.button}>End call</button>
     </div>
   );

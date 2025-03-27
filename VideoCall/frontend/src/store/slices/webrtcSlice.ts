@@ -9,6 +9,7 @@ const initialState = {
   callingUsername: "",
   localMicrophoneEnabled: true,
   localCameraEnabled: true,
+  localScreenShareEnabled: false,
   callRejected: {
     rejected: false,
     answer: "",
@@ -49,6 +50,9 @@ const webRTCSlice = createSlice({
     setLocalCameraEnabled: (state, action) => {
       state.localCameraEnabled = action.payload;
     },
+    setLocalScreenShareEnabled: (state, action) => {
+      state.localScreenShareEnabled = action.payload;
+    },
   },
 });
 
@@ -61,5 +65,6 @@ export const {
   setCallIfRejected,
   setLocalMicrophoneEnabled,
   setLocalCameraEnabled,
+  setLocalScreenShareEnabled,
 } = webRTCSlice.actions;
 export default webRTCSlice.reducer;

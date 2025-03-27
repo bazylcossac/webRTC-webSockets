@@ -6,6 +6,7 @@ import {
   setCallingUsername,
   setCallIfRejected,
   setRemoteStream,
+  setLocalScreenShareEnabled,
 } from "../store/slices/webrtcSlice";
 import { callStates, preOfferAnswers } from "../lib/constants";
 import * as wss from "../utils/connectToWs";
@@ -24,7 +25,7 @@ const configuration = {
 };
 
 let connectedUserSocketId: string | null;
-let peerConection;
+let peerConection: RTCPeerConnection | null;
 
 const createPeerConection = () => {
   peerConection = new RTCPeerConnection(configuration);
@@ -84,9 +85,42 @@ export const getLocalStream = async () => {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     store.dispatch(setLocalStream(stream));
     store.dispatch(setCallState(callStates.CALL_AVAILABLE));
-    createPeerConection();
+    createPeerConection(stream);
   } catch (error) {
     throw new Error(`Failed to get user media stream | ${error}`);
+  }
+};
+
+export const getScreenSahre = async () => {
+  if (!store.getState().webrtc.localScreenShareEnabled) {
+    try {
+      const screenStream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+      });
+      store.dispatch(setLocalScreenShareEnabled(true));
+      const senders = await peerConection!.getSenders();
+      const sender = senders.find(
+        (sender: RTCRtpSender) =>
+          sender.track!.kind === screenStream.getVideoTracks()[0].kind
+      );
+      if (!sender) return;
+      sender.replaceTrack(screenStream.getVideoTracks()[0]);
+      // store.dispatch(setLocalStream(screenStream));
+    } catch (err) {
+      throw new Error(`Failed to screen share | ${err}`);
+    }
+  } else {
+    const localStream = store.getState().webrtc.localStream;
+    if (!localStream) return;
+    const senders = await peerConection!.getSenders();
+
+    const sender = senders.find(
+      (sender: RTCRtpSender) =>
+        sender.track!.kind === localStream?.getVideoTracks()[0].kind
+    );
+    if (!sender) return;
+    sender.replaceTrack(localStream.getVideoTracks()[0]);
+    store.dispatch(setLocalScreenShareEnabled(false));
   }
 };
 
@@ -165,7 +199,6 @@ export const handlePreOfferAnswer = (data) => {
       setCallIfRejected({ rejected: true, answer: rejectionReason })
     );
     resetCallData();
-
   }
 };
 
