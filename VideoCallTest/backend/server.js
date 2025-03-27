@@ -51,9 +51,13 @@ io.on("connection", (socket) => {
     socket.to(data.callerSocketId).emit("webRTC-answer", data.answer);
   });
 
-  socket.on("webRTC-candidate", data => {
-    socket.to(data.callerSocketId).emit("webRTC-candidate", data.candidate)
-  })
+  socket.on("webRTC-candidate", (data) => {
+    socket.to(data.callerSocketId).emit("webRTC-candidate", data.candidate);
+  });
+
+  socket.on("close-connection", (data) => {
+    socket.to(data.connectedUserSocketId).emit("close-connection", data);
+  });
 
   socket.on("disconnect", () => {
     const newUsers = users.filter((user) => user.socketId !== socket.id);

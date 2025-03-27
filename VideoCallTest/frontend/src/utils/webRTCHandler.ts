@@ -5,10 +5,12 @@ import {
   setCallState,
   setLocalStream,
   setRemoteStream,
+  setShareScreenEnabled,
 } from "../store/slices/webrtcSlice";
 import store from "../store/store";
 import { callStates, preOfferAnswers } from "../constants";
 import {
+  sendInfoAboutClosingConnection,
   sendPreOfferAnswer,
   sendWebRTCAnswer,
   sendWebRTCCandidate,
@@ -29,7 +31,7 @@ const configuration = {
 };
 
 let connectedUserSocketId: string | null;
-let peerConection;
+let peerConection: RTCPeerConnection | null;
 
 export const getLocalStream = async () => {
   try {
@@ -76,6 +78,42 @@ const createPeerConection = () => {
       console.log("CONNECTED TO USER");
     }
   };
+};
+
+let shareScreen: MediaStream;
+
+export const handleShareScreen = async () => {
+  if (!store.getState().webrtc.shareScreenEnabled) {
+    try {
+      shareScreen = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+      });
+
+      const senders = await peerConection.getSenders();
+      const sender = senders.find(
+        (sender: RTCRtpSender) =>
+          sender.track!.kind === shareScreen.getVideoTracks()[0].kind
+      );
+      if (!sender) return;
+      sender.replaceTrack(shareScreen.getVideoTracks()[0]);
+    } catch (err) {
+      console.error(`Failed to share screen | ${err}`);
+    }
+  } else {
+    const localStream: MediaStream | null = store.getState().webrtc.localStream;
+
+    const senders = await peerConection.getSenders();
+
+    const sender = senders.find(
+      (sender: RTCRtpSender) =>
+        sender.track!.kind === localStream!.getVideoTracks()[0].kind
+    );
+
+    if (!sender) return;
+    sender.replaceTrack(localStream!.getVideoTracks()[0]);
+    store.dispatch(setShareScreenEnabled(false));
+    shareScreen.getVideoTracks().forEach((track) => track.stop());
+  }
 };
 
 export const handlePreOffer = (data) => {
@@ -168,4 +206,24 @@ export const acceptIncomingCall = () => {
 const resetCallData = () => {
   connectedUserSocketId = null;
   store.dispatch(setCallState(callStates.CALL_AVAILABLE));
+};
+
+export const handleCloseConnection = (data) => {
+  resetDataAfterDisconnectFromCall();
+};
+
+export const closeConnection = () => {
+  sendInfoAboutClosingConnection({
+    connectedUserSocketId,
+  });
+  resetDataAfterDisconnectFromCall();
+};
+
+export const resetDataAfterDisconnectFromCall = () => {
+  peerConection!.close();
+  peerConection = null;
+  store.dispatch(setCallState(callStates.CALL_AVAILABLE));
+  store.dispatch(setRemoteStream(null));
+  createPeerConection();
+  resetCallData();
 };

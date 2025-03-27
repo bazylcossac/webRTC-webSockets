@@ -5,6 +5,7 @@ const serverUrl = "http://localhost:3000";
 import {
   handleAnswer,
   handleCandidate,
+  handleCloseConnection,
   handleOffer,
   handlePreOffer,
   handlePreOfferAnswer,
@@ -46,6 +47,10 @@ export const wssConnection = () => {
     handleCandidate(candidate);
   });
 
+  socket.on("close-connection", (data) => {
+    handleCloseConnection(data);
+  });
+
   socket.on("user-left", (data) => {
     handleUsers(data);
   });
@@ -77,6 +82,9 @@ export const sendWebRTCAnswer = (data) => {
 
 export const sendWebRTCCandidate = (data) => {
   socket.emit("webRTC-candidate", data);
+};
+export const sendInfoAboutClosingConnection = (data) => {
+  socket.emit("close-connection", data);
 };
 
 const handleUsers = (data) => {
