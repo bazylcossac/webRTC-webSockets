@@ -10,6 +10,7 @@ import {
 } from "../store/slices/webrtcSlice";
 import { callStates, preOfferAnswers } from "../lib/constants";
 import * as wss from "../utils/connectToWs";
+import { sendCloseConnectionIformation } from "../utils/connectToWs";
 
 const constraints = {
   video: true,
@@ -85,17 +86,19 @@ export const getLocalStream = async () => {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     store.dispatch(setLocalStream(stream));
     store.dispatch(setCallState(callStates.CALL_AVAILABLE));
-    createPeerConection(stream);
+    createPeerConection();
   } catch (error) {
     throw new Error(`Failed to get user media stream | ${error}`);
   }
 };
 
+let screenStream: MediaStream;
 export const getScreenSahre = async () => {
   if (!store.getState().webrtc.localScreenShareEnabled) {
     try {
-      const screenStream = await navigator.mediaDevices.getDisplayMedia({
+      screenStream = await navigator.mediaDevices.getDisplayMedia({
         video: true,
+        audio: true,
       });
       store.dispatch(setLocalScreenShareEnabled(true));
       const senders = await peerConection!.getSenders();
@@ -105,7 +108,6 @@ export const getScreenSahre = async () => {
       );
       if (!sender) return;
       sender.replaceTrack(screenStream.getVideoTracks()[0]);
-      // store.dispatch(setLocalStream(screenStream));
     } catch (err) {
       throw new Error(`Failed to screen share | ${err}`);
     }
@@ -121,6 +123,7 @@ export const getScreenSahre = async () => {
     if (!sender) return;
     sender.replaceTrack(localStream.getVideoTracks()[0]);
     store.dispatch(setLocalScreenShareEnabled(false));
+    screenStream.getVideoTracks().forEach((track) => track.stop());
   }
 };
 
@@ -132,7 +135,7 @@ export const handeCandidate = async (data) => {
   }
 };
 
-export const callToOtherUser = (calleDetials) => {
+export const callToOtherUser = (calleDetials) => {g
   connectedUserSocketId = calleDetials.socketId; // socketid that you want to connect with
   store.dispatch(setCallState(callStates.CALL_IN_PROGRESS));
   store.dispatch(setCallingDialogVisible(true));
@@ -177,6 +180,26 @@ export const declineIncomingCall = () => {
     answer: preOfferAnswers.CALL_REJECTED,
   });
 
+  resetCallData();
+};
+
+export const handleCloseConnection = () => {
+  resetCallDataAfterDisconnect();
+};
+
+export const closeConnection = () => {
+  sendCloseConnectionIformation({
+    connectedUserSocketId,
+  });
+  resetCallDataAfterDisconnect();
+};
+
+export const resetCallDataAfterDisconnect = () => {
+  peerConection?.close();
+  peerConection = null;
+  store.dispatch(setCallState(callStates.CALL_AVAILABLE));
+  store.dispatch(setRemoteStream(null));
+  createPeerConection();
   resetCallData();
 };
 

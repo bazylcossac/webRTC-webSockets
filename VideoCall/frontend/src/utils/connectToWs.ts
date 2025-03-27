@@ -1,8 +1,9 @@
 import { io, Socket } from "socket.io-client";
 import store from "../store/store";
 import { setActiveUsers } from "../store/slices/userSlice";
-import { broadcastEvents } from "../lib/constants";
 import * as webRTCHandler from "./webRTCHandler";
+import { broadcastEvents } from "../lib/constants";
+import { handleCloseConnection } from "./webRTCHandler";
 const SERVER_URL = "http://localhost:3000";
 
 let socket: Socket;
@@ -34,7 +35,12 @@ export const connectoToWs = () => {
   });
 
   socket.on("webRTC-candidate", (data) => {
-    webRTCHandler.handeCandidate(data)
+    webRTCHandler.handeCandidate(data);
+  });
+  socket.on("close-connection", (data) => {
+    console.log(data);
+    console.log("CONNECTION CLOSE");
+    handleCloseConnection();
   });
 };
 
@@ -61,6 +67,10 @@ export const sendPreOfferAnswer = (data) => {
 
 export const sednWebRTCCandidate = (data) => {
   socket.emit("webRTC-candidate", data);
+};
+
+export const sendCloseConnectionIformation = (data) => {
+  socket.emit("close-connection", data);
 };
 
 const handleBroadCastEvent = (data) => {

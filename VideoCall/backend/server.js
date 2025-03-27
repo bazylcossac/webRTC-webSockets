@@ -79,4 +79,8 @@ io.on("connection", (socket) => {
       candidate: data.candidate,
     });
   });
+
+  socket.on("close-connection", (data) => {
+    socket.to(data.connectedUserSocketId).emit("close-connection", data);
+  });
 });

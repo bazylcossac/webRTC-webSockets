@@ -5,7 +5,7 @@ import {
   setLocalCameraEnabled,
   setLocalMicrophoneEnabled,
 } from "../../store/slices/webrtcSlice";
-import { getScreenSahre } from "../../utils/webRTCHandler";
+import { closeConnection, getScreenSahre } from "../../utils/webRTCHandler";
 
 function ConversationButtons() {
   const dispatch = useDispatch();
@@ -45,7 +45,9 @@ function ConversationButtons() {
       <button className={styles.button} onClick={handleScreeenSharing}>
         Share screen
       </button>
-      <button className={styles.button}>End call</button>
+      <button className={styles.button} onClick={closeConnection}>
+        End call
+      </button>
     </div>
   );
 }
