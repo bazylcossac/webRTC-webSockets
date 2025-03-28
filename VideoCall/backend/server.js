@@ -28,6 +28,7 @@ const io = socket(server, {
 
 let peers = [];
 let groupCalls = [];
+let peerId;
 const broadcastEvents = {
   ACTIVE_USERS: "ACTIVE_USERS",
   GROUP_CALL_ROOMS: "GROUP_CALL_ROOMS",
@@ -50,10 +51,21 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     const newPeers = peers.filter((users) => users.socketId !== socket.id);
     peers = newPeers;
+    const newCallGroups = groupCalls.filter(
+      (group) => group.socketId !== socket.id
+    );
+    groupCalls = newCallGroups;
 
     io.sockets.emit("broadcast", {
       eventType: broadcastEvents.ACTIVE_USERS,
       activeUsers: peers,
+    });
+
+    // not workking ??? and idc why the fuck
+
+    io.sockets.emit("broadcast", {
+      eventType: broadcastEvents.GROUP_CALL_ROOMS,
+      groupCalls: groupCalls,
     });
   });
 
@@ -97,16 +109,22 @@ io.on("connection", (socket) => {
 
   socket.on("group-call-create", (data) => {
     const groupCallId = uuid.v4();
+    peerId = data.peerId;
+    socket.join(groupCallId);
+
     groupCalls.push({
       groupCallId: groupCallId,
-      hostName: data.hostName,
       peerId: data.peerId,
+      hostName: data.hostName,
+      socketId: socket.id,
     });
+
+    console.log(groupCalls);
 
     io.sockets.emit("broadcast", {
       eventType: broadcastEvents.GROUP_CALL_ROOMS,
-      groupCalls: groupCalls,
       peerId: data.peerId,
+      groupCalls: groupCalls,
     });
   });
 });

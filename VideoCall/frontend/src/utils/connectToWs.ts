@@ -84,12 +84,12 @@ const handleBroadCastEvent = (data) => {
 
     case broadcastEvents.GROUP_CALL_ROOMS: {
       const activeGroups = data.groupCalls.filter(
-        (group) => group.peerId !== data.peerId
+        (group) => group.socketId !== socket.id
       );
       store.dispatch(setActiveGroups(activeGroups));
+      console.log(activeGroups);
       break;
     }
-
     default:
       break;
   }

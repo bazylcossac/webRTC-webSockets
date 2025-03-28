@@ -12,7 +12,6 @@ const userSlice = createSlice({
   reducers: {
     setUserName: (state, action) => {
       state.name = action.payload;
-      console.log(state.name);
     },
     setActiveUsers: (state, action) => {
       state.activeUsers = action.payload;
