@@ -1,25 +1,13 @@
 import GroupCallRoom from "./groupCallRoom";
-
-const rooms = [
-  {
-    roomId: "3512",
-    hostName: "Michal",
-  },
-  {
-    roomId: "3542",
-    hostName: "Nicola",
-  },
-  {
-    roomId: "4312",
-    hostName: "Berni",
-  },
-];
+import { useSelector } from "react-redux";
 
 function GroupCallRooms() {
+  const activeGroups = useSelector((state) => state.user.activeGroups);
+
   return (
     <>
-      {rooms.map((room) => (
-        <GroupCallRoom key={room.roomId} room={room} />
+      {activeGroups?.map((room) => (
+        <GroupCallRoom key={room.groupCallId} hostName={room.hostName} />
       ))}
     </>
   );

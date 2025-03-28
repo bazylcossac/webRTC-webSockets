@@ -1,15 +1,7 @@
-function GroupCallRoom({
-  room: { roomId, hostName },
-}: {
-  room: { roomId: string; hostName: string};
-}) {
+function GroupCallRoom({ hostName }: { hostName: string }) {
   const handleJoinGroupCall = () => {};
 
-  return (
-    <div id={roomId} onClick={handleJoinGroupCall}>
-      {hostName}
-    </div>
-  );
+  return <div onClick={handleJoinGroupCall}>{hostName}'s room</div>;
 }
 
 export default GroupCallRoom;

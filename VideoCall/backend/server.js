@@ -1,6 +1,7 @@
 const express = require("express");
 const socket = require("socket.io");
 const http = require("http");
+const uuid = require("uuid");
 const { ExpressPeerServer } = require("peer");
 const groupCallHandler = require("./groupCallHandler");
 const PORT = 3000;
@@ -26,6 +27,7 @@ const io = socket(server, {
 });
 
 let peers = [];
+let groupCalls = [];
 const broadcastEvents = {
   ACTIVE_USERS: "ACTIVE_USERS",
   GROUP_CALL_ROOMS: "GROUP_CALL_ROOMS",
@@ -91,5 +93,20 @@ io.on("connection", (socket) => {
 
   socket.on("close-connection", (data) => {
     socket.to(data.connectedUserSocketId).emit("close-connection", data);
+  });
+
+  socket.on("group-call-create", (data) => {
+    const groupCallId = uuid.v4();
+    groupCalls.push({
+      groupCallId: groupCallId,
+      hostName: data.hostName,
+      peerId: data.peerId,
+    });
+
+    io.sockets.emit("broadcast", {
+      eventType: broadcastEvents.GROUP_CALL_ROOMS,
+      groupCalls: groupCalls,
+      peerId: data.peerId,
+    });
   });
 });

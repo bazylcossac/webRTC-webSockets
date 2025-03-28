@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import store from "../store/store";
-import { setActiveUsers } from "../store/slices/userSlice";
+import { setActiveGroups, setActiveUsers } from "../store/slices/userSlice";
 import * as webRTCHandler from "./webRTCHandler";
 import { broadcastEvents } from "../lib/constants";
 import { handleCloseConnection } from "./webRTCHandler";
@@ -16,7 +16,6 @@ export const connectoToWs = () => {
 
   socket.on("broadcast", (data) => {
     handleBroadCastEvent(data);
-    console.log(data.activeUsers);
   });
 
   socket.on("pre-offer", (data) => {
@@ -40,7 +39,7 @@ export const connectoToWs = () => {
   socket.on("close-connection", (data) => {
     console.log(data);
     console.log("CONNECTION CLOSE");
-    handleCloseConnection()
+    handleCloseConnection();
   });
 };
 
@@ -82,7 +81,22 @@ const handleBroadCastEvent = (data) => {
       store.dispatch(setActiveUsers(activeUsers));
       break;
     }
+
+    case broadcastEvents.GROUP_CALL_ROOMS: {
+      const activeGroups = data.groupCalls.filter(
+        (group) => group.peerId !== data.peerId
+      );
+      store.dispatch(setActiveGroups(activeGroups));
+      break;
+    }
+
     default:
       break;
   }
+};
+
+/// PEER JS
+
+export const sendCreateRoomRequest = (data) => {
+  socket.emit("group-call-create", data);
 };
