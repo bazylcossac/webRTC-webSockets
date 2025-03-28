@@ -41,6 +41,12 @@ export const connectoToWs = () => {
     console.log("CONNECTION CLOSE");
     handleCloseConnection();
   });
+
+  /// peer js group calls
+
+  socket.on("group-call-join-request", (data) => {
+    console.log(data);
+  });
 };
 
 export const registerNewUser = (username: string) => {
@@ -99,4 +105,10 @@ const handleBroadCastEvent = (data) => {
 
 export const sendCreateRoomRequest = (data) => {
   socket.emit("group-call-create", data);
+};
+
+export const sendJoinGroupCallRequest = (data) => {
+  console.log("JOINED GROUP CALL");
+  console.log(data);
+  // socket.emit("group-call-join-request");
 };

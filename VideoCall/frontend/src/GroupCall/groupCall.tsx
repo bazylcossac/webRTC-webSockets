@@ -2,22 +2,26 @@ import { useSelector } from "react-redux";
 import GroupCallBtn from "./groupCallBtn";
 import { callStates } from "../lib/constants";
 import { createRoom } from "../utils/webRTCGroupCallHandler";
-import store from "../store/store";
+
+import MainGroupCallRoom from "../components/GroupCallRooms/mainGroupCallRoom";
 
 function GroupCall() {
   const localStream = useSelector((state) => state.webrtc.localStream);
   const callState = useSelector((state) => state.webrtc.callState);
+  const groupCallActive = useSelector((state) => state.webrtc.groupCallActive);
 
   const handleCreateRoom = () => {
-    // console.log(store.getState().user.name);
     createRoom();
   };
 
   return (
     <div>
-      {localStream && callState !== callStates.CALL_IN_PROGRESS && (
-        <GroupCallBtn onClick={handleCreateRoom} label="Create group call" />
-      )}
+      {!groupCallActive &&
+        localStream &&
+        callState !== callStates.CALL_IN_PROGRESS && (
+          <GroupCallBtn onClick={handleCreateRoom} label="Create group call" />
+        )}
+      {groupCallActive && <MainGroupCallRoom />}
     </div>
   );
 }

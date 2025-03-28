@@ -127,4 +127,12 @@ io.on("connection", (socket) => {
       groupCalls: groupCalls,
     });
   });
+
+  socket.on("group-call-join-request", (data) => {
+    io.to(data.groupCallId).emit("group-call-join-request", {
+      peerId: data.peerId,
+      streamId: data.streamId,
+    });
+    socket.join(data.groupCallId);
+  });
 });

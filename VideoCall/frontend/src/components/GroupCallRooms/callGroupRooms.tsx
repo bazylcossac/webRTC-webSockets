@@ -7,7 +7,7 @@ function GroupCallRooms() {
   return (
     <>
       {activeGroups?.map((room) => (
-        <GroupCallRoom key={room.groupCallId} hostName={room.hostName} />
+        <GroupCallRoom key={room.groupCallId} room={room} />
       ))}
     </>
   );

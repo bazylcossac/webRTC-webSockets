@@ -10,6 +10,7 @@ const initialState = {
   localMicrophoneEnabled: true,
   localCameraEnabled: true,
   localScreenShareEnabled: false,
+  groupCallActive: false,
   callRejected: {
     rejected: false,
     answer: "",
@@ -52,6 +53,9 @@ const webRTCSlice = createSlice({
     setLocalScreenShareEnabled: (state, action) => {
       state.localScreenShareEnabled = action.payload;
     },
+    setGroupCallASctive: (state, action) => {
+      state.groupCallActive = action.payload;
+    },
     resetCallState: (state) => {
       state.remoteStream = null;
       state.localMicrophoneEnabled = true;
@@ -76,5 +80,6 @@ export const {
   setLocalCameraEnabled,
   setLocalScreenShareEnabled,
   resetCallState,
+  setGroupCallASctive
 } = webRTCSlice.actions;
 export default webRTCSlice.reducer;

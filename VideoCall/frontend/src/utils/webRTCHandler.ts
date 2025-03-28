@@ -8,6 +8,7 @@ import {
   setRemoteStream,
   setLocalScreenShareEnabled,
   resetCallState,
+  setGroupCallASctive,
 } from "../store/slices/webrtcSlice";
 import { callStates, preOfferAnswers } from "../lib/constants";
 import * as wss from "../utils/connectToWs";
@@ -199,6 +200,7 @@ export const resetCallDataAfterDisconnect = () => {
   peerConection?.close();
   peerConection = null;
   store.dispatch(setCallState(callStates.CALL_AVAILABLE));
+  store.dispatch(setGroupCallASctive(false));
   store.dispatch(setRemoteStream(null));
   createPeerConection();
   resetCallData();
