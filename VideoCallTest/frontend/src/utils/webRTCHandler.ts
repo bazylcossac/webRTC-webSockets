@@ -224,6 +224,6 @@ export const resetDataAfterDisconnectFromCall = () => {
   peerConection = null;
   store.dispatch(setCallState(callStates.CALL_AVAILABLE));
   store.dispatch(setRemoteStream(null));
-  createPeerConection();
+  createPeerConection(); 
   resetCallData();
 };

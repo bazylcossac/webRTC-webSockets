@@ -75,6 +75,6 @@ export const {
   setLocalMicrophoneEnabled,
   setLocalCameraEnabled,
   setLocalScreenShareEnabled,
-  resetCallState
+  resetCallState,
 } = webRTCSlice.actions;
-export fault webRTCSlice.reducer;
+export default webRTCSlice.reducer;
