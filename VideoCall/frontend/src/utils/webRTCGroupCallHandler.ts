@@ -1,5 +1,9 @@
 import { callStates } from "../lib/constants";
-import { setCallState, setGroupCallASctive } from "../store/slices/webrtcSlice";
+import {
+  setCallState,
+  setGroupCallASctive,
+  setRemoteStream,
+} from "../store/slices/webrtcSlice";
 import store from "../store/store";
 import { sendCreateRoomRequest, sendJoinGroupCallRequest } from "./connectToWs";
 import Peer from "peerjs";
@@ -19,6 +23,17 @@ export const connectWithPeer = () => {
     console.log("PEER CONNECTION");
     console.log(id);
   });
+
+  myPeer.on("call", (call) => {
+    const localStream = store.getState().webrtc.localStream;
+    if (!localStream) return;
+    call.answer(localStream);
+
+    call.on("stream", (incomingStream) => {
+      console.log("incoming stream");
+      console.log(incomingStream);
+    });
+  });
 };
 
 export const createRoom = () => {
@@ -34,7 +49,7 @@ export const createRoom = () => {
 export const joinRoomRequest = (groupCallId: string, socketId: string) => {
   const localStream = store.getState().webrtc.localStream;
   if (!localStream) return;
-  // console.log(localStream.id);
+
   sendJoinGroupCallRequest({
     groupCallId,
     socketId,
@@ -43,4 +58,11 @@ export const joinRoomRequest = (groupCallId: string, socketId: string) => {
   });
 };
 
-export const connectToNewUser = (data) => {};
+export const connectToNewUser = (data) => {
+  const localStream = store.getState().webrtc.localStream;
+  const call = myPeer!.call(data.peerId, localStream);
+
+  call.on("stream", (incomingStream) => {
+    console.log(incomingStream);
+  });
+};

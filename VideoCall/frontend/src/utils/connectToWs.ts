@@ -48,7 +48,7 @@ export const connectoToWs = () => {
   socket.on("group-call-join-request", (data) => {
     console.log("JOINED");
     console.log(data);
-    // connectToNewUser(data)
+    connectToNewUser(data)
   });
 };
 
