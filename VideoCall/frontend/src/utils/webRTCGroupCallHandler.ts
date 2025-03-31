@@ -6,6 +6,7 @@ import Peer from "peerjs";
 
 let myPeer;
 let myPerrId: string;
+
 export const connectWithPeer = () => {
   myPeer = new Peer("", {
     path: "/peerjs",
@@ -33,7 +34,7 @@ export const createRoom = () => {
 export const joinRoomRequest = (groupCallId: string, socketId: string) => {
   const localStream = store.getState().webrtc.localStream;
   if (!localStream) return;
-
+  // console.log(localStream.id);
   sendJoinGroupCallRequest({
     groupCallId,
     socketId,
@@ -41,3 +42,5 @@ export const joinRoomRequest = (groupCallId: string, socketId: string) => {
     peerId: myPerrId,
   });
 };
+
+export const connectToNewUser = (data) => {};

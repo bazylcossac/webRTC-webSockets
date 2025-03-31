@@ -4,6 +4,7 @@ import { setActiveGroups, setActiveUsers } from "../store/slices/userSlice";
 import * as webRTCHandler from "./webRTCHandler";
 import { broadcastEvents } from "../lib/constants";
 import { handleCloseConnection } from "./webRTCHandler";
+import { connectToNewUser } from "./webRTCGroupCallHandler";
 const SERVER_URL = "http://localhost:3000";
 
 let socket: Socket;
@@ -45,7 +46,9 @@ export const connectoToWs = () => {
   /// peer js group calls
 
   socket.on("group-call-join-request", (data) => {
+    console.log("JOINED");
     console.log(data);
+    // connectToNewUser(data)
   });
 };
 
@@ -108,7 +111,7 @@ export const sendCreateRoomRequest = (data) => {
 };
 
 export const sendJoinGroupCallRequest = (data) => {
-  console.log("JOINED GROUP CALL");
+  // console.log("JOINED GROUP CALL");
   console.log(data);
-  // socket.emit("group-call-join-request");
+  socket.emit("group-call-join-request", data);
 };

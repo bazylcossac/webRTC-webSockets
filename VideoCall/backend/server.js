@@ -131,7 +131,7 @@ io.on("connection", (socket) => {
   socket.on("group-call-join-request", (data) => {
     io.to(data.groupCallId).emit("group-call-join-request", {
       peerId: data.peerId,
-      streamId: data.streamId,
+      streamId: data.localStreamId,
     });
     socket.join(data.groupCallId);
   });

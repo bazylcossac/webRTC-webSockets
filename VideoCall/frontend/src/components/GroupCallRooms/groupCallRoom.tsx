@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import { joinRoomRequest } from "../../utils/webRTCGroupCallHandler";
 type roomType = {
   groupCallId: string;
@@ -9,7 +8,6 @@ type roomType = {
 
 function GroupCallRoom({ room }: { room: roomType }) {
   const handleJoinGroupCall = () => {
-    // console.log(room.groupCallId);
     joinRoomRequest(room.groupCallId, room.socketId);
   };
 
