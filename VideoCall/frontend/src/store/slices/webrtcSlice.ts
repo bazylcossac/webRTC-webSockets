@@ -11,6 +11,7 @@ const initialState = {
   localCameraEnabled: true,
   localScreenShareEnabled: false,
   groupCallActive: false,
+  groupCallStreams: [] as MediaStream[],
   callRejected: {
     rejected: false,
     answer: "",
@@ -66,6 +67,9 @@ const webRTCSlice = createSlice({
       state.callingUsername = "";
       state.localScreenShareEnabled = false;
     },
+    addStreamToGroupCall: (state, action) => {
+      state.groupCallStreams.push(action.payload);
+    },
   },
 });
 
@@ -80,6 +84,7 @@ export const {
   setLocalCameraEnabled,
   setLocalScreenShareEnabled,
   resetCallState,
-  setGroupCallASctive
+  setGroupCallASctive,
+  addStreamToGroupCall,
 } = webRTCSlice.actions;
 export default webRTCSlice.reducer;
