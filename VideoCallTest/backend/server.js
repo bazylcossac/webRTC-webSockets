@@ -91,7 +91,6 @@ io.on("connection", (socket) => {
       socketId: socket.id,
       groupId: groupId,
     });
-
     io.sockets.emit("create-group-call", groupCalls);
   });
 });
