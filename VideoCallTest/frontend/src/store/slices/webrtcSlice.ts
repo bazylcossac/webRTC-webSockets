@@ -16,6 +16,7 @@ const initialState = {
     answer: "",
   },
   groupCalls: [],
+  groupCallsStreams: [] as MediaStream[],
 };
 
 const webrtcSlice = createSlice({
@@ -58,6 +59,9 @@ const webrtcSlice = createSlice({
     setGroupCalls: (state, action) => {
       state.groupCalls = action.payload;
     },
+    addStreamToGroupCall: (state, action) => {
+      state.groupCallsStreams.push(action.payload);
+    },
   },
 });
 
@@ -71,6 +75,7 @@ export const {
   setMicEnabled,
   setCameraEnabled,
   setShareScreenEnabled,
+  setGroupCalls,
   setGroupCallActive,
 } = webrtcSlice.actions;
 export default webrtcSlice.reducer;

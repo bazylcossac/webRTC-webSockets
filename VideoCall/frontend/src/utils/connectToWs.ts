@@ -67,7 +67,7 @@ export const sendPreOffer = (data) => {
   socket.emit("pre-offer", data);
 };
 
-export const sendPreOfferAnswer = (data) => {
+export const sendPreOfferAnswer = (data)1 => {
   socket.emit("pre-offer-answer", data);
 };
 

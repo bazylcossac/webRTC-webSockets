@@ -1,7 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import store from "../store/store";
 import { setActiveUsers } from "../store/slices/userSlice";
-const serverUrl = "http://localhost:3000";
 import {
   handleAnswer,
   handleCandidate,
@@ -13,9 +12,12 @@ import {
 import {
   setCallingDialogVisible,
   setCallState,
+  setGroupCalls,
 } from "../store/slices/webrtcSlice";
 import { callStates } from "../constants";
+import { connectToGroup } from "./webRTCGroupCallHandler";
 
+const serverUrl = "http://localhost:3000";
 let socket: Socket;
 
 export const wssConnection = () => {
@@ -56,7 +58,15 @@ export const wssConnection = () => {
   });
 
   socket.on("create-group-call", (groupCalls) => {
-    console.log(groupCalls);
+    const activeGroups = groupCalls.filter(
+      (group) => group.socketId !== socket.id
+    );
+    console.log(activeGroups);
+    store.dispatch(setGroupCalls(activeGroups));
+  });
+
+  socket.on("join-room-request", (data) => {
+    connectToGroup(data);
   });
 };
 
@@ -98,4 +108,8 @@ const handleUsers = (data) => {
 
 export const handleCreateGroupCall = (data) => {
   socket.emit("create-group-call", data);
+};
+
+export const sendJoinRoomRequest = (data) => {
+  socket.emit("join-room-request", data);
 };

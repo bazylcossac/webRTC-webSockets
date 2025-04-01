@@ -1,7 +1,7 @@
 import Peer from "peerjs";
 import store from "../store/store";
-import { handleCreateGroupCall } from "./wssConnection";
-import { setCallState } from "../store/slices/webrtcSlice";
+import { handleCreateGroupCall, sendJoinRoomRequest } from "./wssConnection";
+import { setCallState, setGroupCallActive } from "../store/slices/webrtcSlice";
 import { callStates } from "../constants";
 
 let myPeer;
@@ -28,4 +28,23 @@ export const createGroupCall = () => {
   });
 
   store.dispatch(setCallState(callStates.CALL_IN_PROGRESS));
+  store.dispatch(setGroupCallActive(true));
+};
+
+export const joinRoom = (groupCallId: string, groupPeerId: string) => {
+  const localStream = store.getState().webrtc.localStream as MediaStream | null;
+  if (!localStream) return;
+
+  sendJoinRoomRequest({
+    localStreamId: localStream.id,
+    groupCallId: groupCallId,
+    groupPeerId: groupPeerId,
+  });
+  store.dispatch(setCallState(callStates.CALL_IN_PROGRESS));
+  store.dispatch(setGroupCallActive(true));
+};
+
+export const connectToGroup = (data) => {
+  console.log("CONNECTED TO GROUP");
+  console.log(data);
 };

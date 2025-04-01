@@ -1,3 +1,5 @@
+import { joinRoom } from "../utils/webRTCGroupCallHandler";
+
 type groupCallType = {
   hostName: string;
   hostPeerId: string;
@@ -5,13 +7,27 @@ type groupCallType = {
   groupId: string;
 };
 
+const style = {
+  backgroundColor: "black",
+  padding: "5px",
+  color: "white",
+  display: "inline-block",
+};
+const button = {
+  cursor: "pointer",
+};
+
 function ActiveGroup({ groupCall }: { groupCall: groupCallType }) {
-  const handleJoinGroup = () => {};
+  const handleJoinGroup = () => {
+    joinRoom(groupCall.groupId, groupCall.hostPeerId);
+  };
 
   return (
-    <div>
+    <div style={style}>
       <p>{groupCall.hostName}'s group</p>
-      <button onClick={handleJoinGroup}>Join group</button>
+      <button style={button} onClick={handleJoinGroup}>
+        Join group
+      </button>
     </div>
   );
 }

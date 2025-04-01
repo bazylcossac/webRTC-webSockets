@@ -93,4 +93,13 @@ io.on("connection", (socket) => {
     });
     io.sockets.emit("create-group-call", groupCalls);
   });
+
+  socket.on("join-room-request", (data) => {
+    socket.join(data.groupCallId);
+
+    io.to(data.groupCallId).emit("join-room-request", {
+      streamId: data.localStreamId,
+      peerId: data.peerId,
+    });
+  });
 });
