@@ -5,6 +5,7 @@ const initialState = {
   localStream: null,
   remoteStream: null,
   callState: callStates.CALL_AVAILABLE,
+  groupCallActive: false,
   callingDialogVisible: false,
   callerUsername: "",
   micEnabled: true,
@@ -14,6 +15,7 @@ const initialState = {
     reject: false,
     answer: "",
   },
+  groupCalls: [],
 };
 
 const webrtcSlice = createSlice({
@@ -50,6 +52,12 @@ const webrtcSlice = createSlice({
     setShareScreenEnabled: (state, action) => {
       state.shareScreenEnabled = action.payload;
     },
+    setGroupCallActive: (state, action) => {
+      state.groupCallActive = action.payload;
+    },
+    setGroupCalls: (state, action) => {
+      state.groupCalls = action.payload;
+    },
   },
 });
 
@@ -63,5 +71,6 @@ export const {
   setMicEnabled,
   setCameraEnabled,
   setShareScreenEnabled,
+  setGroupCallActive,
 } = webrtcSlice.actions;
 export default webrtcSlice.reducer;

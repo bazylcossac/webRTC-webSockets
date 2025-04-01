@@ -28,6 +28,7 @@ const io = socket(server, {
 });
 
 let users = [];
+let groupCalls = [];
 
 io.on("connection", (socket) => {
   console.log("connected user: ", socket.id);
@@ -76,5 +77,21 @@ io.on("connection", (socket) => {
     console.log(users);
 
     io.sockets.emit("user-left", users);
+  });
+
+  /// peerjs
+
+  socket.on("create-group-call", (data) => {
+    const groupId = uuid.v4();
+    socket.join(groupId);
+
+    groupCalls.push({
+      hostName: data.hostName,
+      hostPeerId: data.hostPeerId,
+      socketId: socket.id,
+      groupId: groupId,
+    });
+
+    io.sockets.emit("create-group-call", groupCalls);
   });
 });

@@ -54,6 +54,10 @@ export const wssConnection = () => {
   socket.on("user-left", (data) => {
     handleUsers(data);
   });
+
+  socket.on("create-group-call", (groupCalls) => {
+    console.log(groupCalls);
+  });
 };
 
 export const handleRegisterUser = (username: string) => {
@@ -90,4 +94,8 @@ export const sendInfoAboutClosingConnection = (data) => {
 const handleUsers = (data) => {
   const activeUsers = data.filter((user) => user.socketId !== socket.id);
   store.dispatch(setActiveUsers(activeUsers));
+};
+
+export const handleCreateGroupCall = (data) => {
+  socket.emit("create-group-call", data);
 };
