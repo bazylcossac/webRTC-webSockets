@@ -109,7 +109,7 @@ io.on("connection", (socket) => {
 
   socket.on("group-call-create", (data) => {
     const groupCallId = uuid.v4();
-    peerId = data.peerId;
+    peerId = data.peerId; // host peer id
     socket.join(groupCallId);
 
     groupCalls.push({
@@ -118,9 +118,7 @@ io.on("connection", (socket) => {
       hostName: data.hostName,
       socketId: socket.id,
     });
-
-    console.log(groupCalls);
-
+    
     io.sockets.emit("broadcast", {
       eventType: broadcastEvents.GROUP_CALL_ROOMS,
       peerId: data.peerId,

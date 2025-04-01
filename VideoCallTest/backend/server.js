@@ -1,11 +1,22 @@
 const express = require("express");
 const socket = require("socket.io");
-
+const http = require("http");
+const uuid = require("uuid");
+const { ExpressPeerServer } = require("peer");
+const groupCallHandler = require("./groupCallHandler");
 const port = 3000;
 
 const app = express();
 
-const server = app.listen(port, () => {
+const server = http.createServer(app);
+
+const peerServer = ExpressPeerServer(server, { debug: true });
+
+groupCallHandler.createPeerListeners(peerServer);
+
+app.use("/peerjs", peerServer);
+
+server.listen(port, () => {
   console.log("server running");
 });
 

@@ -66,7 +66,7 @@ export const joinRoomRequest = (groupCallId: string, socketId: string) => {
 
 export const connectToNewUser = (data) => {
   const localStream = store.getState().webrtc.localStream;
-  const call = myPeer!.call(data.peerId, localStream);
+  const call = myPeer!.call(data.peerId, localStream); // pperId = host id
 
   call.on("stream", (incomingStream) => {
     const groupStreams = store.getState().webrtc.groupCallStreams;

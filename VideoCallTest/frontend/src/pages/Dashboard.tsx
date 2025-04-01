@@ -11,6 +11,7 @@ import CallingDialog from "../components/dialogs/callingDialog";
 import IncomingCall from "../components/dialogs/incomingCallDialog";
 import RejectedDialog from "../components/dialogs/callRejectedDialog";
 import CallButtons from "../components/CallButtons.tsx/CallButtons";
+import { connectWithPeer } from "../utils/webRTCGroupCallHandler";
 function Dashboard() {
   const callState = useSelector((state) => state.webrtc.callState);
   const callIfRejected = useSelector((state) => state.webrtc.callIfRejected);
@@ -21,6 +22,7 @@ function Dashboard() {
   console.log(callIfRejected);
   useEffect(() => {
     getLocalStream();
+    connectWithPeer();
   }, []);
 
   return (

@@ -46,9 +46,7 @@ export const connectoToWs = () => {
   /// peer js group calls
 
   socket.on("group-call-join-request", (data) => {
-    console.log("JOINED");
-    console.log(data);
-    connectToNewUser(data)
+    connectToNewUser(data);
   });
 };
 
@@ -96,7 +94,6 @@ const handleBroadCastEvent = (data) => {
         (group) => group.socketId !== socket.id
       );
       store.dispatch(setActiveGroups(activeGroups));
-      console.log(activeGroups);
       break;
     }
     default:
@@ -111,7 +108,5 @@ export const sendCreateRoomRequest = (data) => {
 };
 
 export const sendJoinGroupCallRequest = (data) => {
-  // console.log("JOINED GROUP CALL");
-  console.log(data);
   socket.emit("group-call-join-request", data);
 };
