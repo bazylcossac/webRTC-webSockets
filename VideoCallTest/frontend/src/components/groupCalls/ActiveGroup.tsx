@@ -1,4 +1,4 @@
-import { joinRoom } from "../utils/webRTCGroupCallHandler";
+import { joinRoom } from "../../utils/webRTCGroupCallHandler";
 
 type groupCallType = {
   hostName: string;

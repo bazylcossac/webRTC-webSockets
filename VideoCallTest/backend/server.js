@@ -95,11 +95,10 @@ io.on("connection", (socket) => {
   });
 
   socket.on("join-room-request", (data) => {
-    socket.join(data.groupCallId);
-
     io.to(data.groupCallId).emit("join-room-request", {
+      peerId: data.groupPeerId,
       streamId: data.localStreamId,
-      peerId: data.peerId,
     });
+    socket.join(data.groupCallId);
   });
 });

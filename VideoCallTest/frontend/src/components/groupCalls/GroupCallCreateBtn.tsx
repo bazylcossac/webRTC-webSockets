@@ -1,4 +1,4 @@
-import { createGroupCall } from "../utils/webRTCGroupCallHandler";
+import { createGroupCall } from "../../utils/webRTCGroupCallHandler";
 
 function GroupCallCreateBtn() {
   const handleCreateGroupCall = () => {

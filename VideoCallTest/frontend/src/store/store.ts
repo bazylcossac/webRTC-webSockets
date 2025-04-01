@@ -10,8 +10,16 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ["webrtc/setLocalStream", "webrtc/setRemoteStream"],
-        ignoredPaths: ["webrtc.localStream", "webrtc.remoteStream"],
+        ignoredActions: [
+          "webrtc/setLocalStream",
+          "webrtc/setRemoteStream",
+          "webrtc/addStreamToGroupCall",
+        ],
+        ignoredPaths: [
+          "webrtc.localStream",
+          "webrtc.remoteStream",
+          "webrtc.groupCallsStreams",
+        ],
       },
     }),
 });
