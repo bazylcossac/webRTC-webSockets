@@ -32,6 +32,7 @@ let peerId;
 const broadcastEvents = {
   ACTIVE_USERS: "ACTIVE_USERS",
   GROUP_CALL_ROOMS: "GROUP_CALL_ROOMS",
+  CLOSE_GROUP_CALL: "CLOSE_GROUP_CALL",
 };
 
 io.on("connection", (socket) => {
@@ -143,7 +144,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("close-room", (data) => {
-    // socket.leave(data.groupCallId);
+    socket.leave(data.groupCallId);
 
     // io.to(data.groupCallId).emit("close-room", {
     //   groupCallId: data.groupCallId,
@@ -156,7 +157,7 @@ io.on("connection", (socket) => {
     groupCalls = newGroupCalls;
 
     io.sockets.emit("broadcast", {
-      eventType: broadcastEvents.GROUP_CALL_ROOMS,
+      eventType: broadcastEvents.CLOSE_GROUP_CALL,
       groupCalls: groupCalls,
     });
   });

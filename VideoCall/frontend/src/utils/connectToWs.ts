@@ -5,6 +5,7 @@ import * as webRTCHandler from "./webRTCHandler";
 import { broadcastEvents } from "../lib/constants";
 import { handleCloseConnection } from "./webRTCHandler";
 import {
+  clearAfterGroupCall,
   connectToNewUser,
   disconnectUserFromGroupCall,
   removeMeFromGroupcCall,
@@ -59,7 +60,6 @@ export const connectoToWs = () => {
 
   socket.on("close-room", (data) => {
     console.log("CLOSING ROOM");
-    console.log(data);
     removeMeFromGroupcCall(data);
   });
 };
@@ -104,12 +104,16 @@ const handleBroadCastEvent = (data) => {
     }
 
     case broadcastEvents.GROUP_CALL_ROOMS: {
-      console.log(data.groupCalls);
-
       const activeGroups = data.groupCalls.filter(
         (group) => group.socketId !== socket.id
       );
       store.dispatch(setActiveGroups(activeGroups));
+      break;
+    }
+    case broadcastEvents.CLOSE_GROUP_CALL: {
+      store.dispatch(setActiveGroups(data.groupCalls));
+
+      clearAfterGroupCall();
       break;
     }
     default:
