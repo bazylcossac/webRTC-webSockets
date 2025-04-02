@@ -12,6 +12,7 @@ const initialState = {
   localScreenShareEnabled: false,
   groupCallActive: false,
   groupCallStreams: [] as MediaStream[],
+  isHostingGroupCall: false,
   callRejected: {
     rejected: false,
     answer: "",
@@ -73,6 +74,9 @@ const webRTCSlice = createSlice({
     setStreamsInGroupCall: (state, action) => {
       state.groupCallStreams = action.payload;
     },
+    setIsHostingGroupCall: (state, action) => {
+      state.isHostingGroupCall = action.payload;
+    },
   },
 });
 
@@ -90,5 +94,6 @@ export const {
   setGroupCallASctive,
   addStreamToGroupCall,
   setStreamsInGroupCall,
+  setIsHostingGroupCall,
 } = webRTCSlice.actions;
 export default webRTCSlice.reducer;

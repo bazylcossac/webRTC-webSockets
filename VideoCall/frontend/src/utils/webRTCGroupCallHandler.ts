@@ -3,13 +3,16 @@ import {
   addStreamToGroupCall,
   setCallState,
   setGroupCallASctive,
+  setIsHostingGroupCall,
   setStreamsInGroupCall,
 } from "../store/slices/webrtcSlice";
 import store from "../store/store";
 import {
   sendCloseConnectionInGroupCall,
+  sendCloseRoom,
   sendCreateRoomRequest,
   sendJoinGroupCallRequest,
+  sendRequestForGroupCallLeave,
 } from "./connectToWs";
 import Peer from "peerjs";
 import { resetCallDataAfterDisconnect } from "./webRTCHandler";
@@ -56,6 +59,7 @@ export const createRoom = () => {
 
   store.dispatch(setCallState(callStates.CALL_IN_PROGRESS));
   store.dispatch(setGroupCallASctive(true));
+  store.dispatch(setIsHostingGroupCall(true));
 };
 
 export const joinRoomRequest = (groupCallId: string, socketId: string) => {
@@ -98,14 +102,26 @@ export const handleGroupCallUserDisconnect = () => {
     groupCallId: currentGroupCallId,
   });
 
+  clearAfterGroupCall();
+};
+
+export const closeRoomCall = () => {
+  sendCloseRoom({
+    peerId: myPerrId,
+  });
+
+  clearAfterGroupCall();
+  store.dispatch(setIsHostingGroupCall(false));
+};
+
+export const clearAfterGroupCall = () => {
   currentGroupCallId = null;
   myPeer!.destroy();
   connectWithPeer();
   store.dispatch(setGroupCallASctive(false));
-  store.dispatch(setStreamsInGroupCall([]))
+  store.dispatch(setStreamsInGroupCall([]));
   store.dispatch(setCallState(callStates.CALL_AVAILABLE));
 };
-
 
 export const disconnectUserFromGroupCall = (localStreamId: string) => {
   const groupCallStreams = store.getState().webrtc.groupCallStreams;
@@ -115,4 +131,18 @@ export const disconnectUserFromGroupCall = (localStreamId: string) => {
   );
 
   store.dispatch(setStreamsInGroupCall(newStreams));
+};
+
+export const removeMeFromGroupcCall = (data) => {
+  console.log("removing me from call");
+  const localStream = store.getState().webrtc.localStream;
+  sendRequestForGroupCallLeave(data);
+  disconnectUserFromGroupCall(localStream!.id);
+  clearAfterGroupCall();
+};
+
+export const isGroupActive = () => {
+  if (store.getState().webrtc.groupCallActive) {
+    return currentGroupCallId;
+  } else return false;
 };

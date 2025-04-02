@@ -141,4 +141,27 @@ io.on("connection", (socket) => {
       data.localStreamId
     );
   });
+
+  socket.on("close-room", (data) => {
+    // socket.leave(data.groupCallId);
+
+    // io.to(data.groupCallId).emit("close-room", {
+    //   groupCallId: data.groupCallId,
+    // });
+
+    const newGroupCalls = groupCalls.filter(
+      (group) => group.peerId !== data.peerId
+    );
+
+    groupCalls = newGroupCalls;
+
+    io.sockets.emit("broadcast", {
+      eventType: broadcastEvents.GROUP_CALL_ROOMS,
+      groupCalls: groupCalls,
+    });
+  });
+
+  socket.on("remove-from-group-call", (data) => {
+    socket.leave(data.groupCallId);
+  });
 });

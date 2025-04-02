@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import GroupCallBtn from "./groupCallBtn";
 import { callStates } from "../lib/constants";
 import {
+  closeRoomCall,
   createRoom,
   handleGroupCallUserDisconnect,
 } from "../utils/webRTCGroupCallHandler";
@@ -12,13 +13,20 @@ function GroupCall() {
   const localStream = useSelector((state) => state.webrtc.localStream);
   const callState = useSelector((state) => state.webrtc.callState);
   const groupCallActive = useSelector((state) => state.webrtc.groupCallActive);
-  console.log("group active ", groupCallActive);
+  const isHostingGroupCall = useSelector(
+    (state) => state.webrtc.isHostingGroupCall
+  );
+
   const handleCreateRoom = () => {
     createRoom();
   };
 
   const handleLeaveRoom = () => {
     handleGroupCallUserDisconnect();
+  };
+
+  const handleCloseRoomCall = () => {
+    closeRoomCall();
   };
 
   return (
@@ -31,6 +39,9 @@ function GroupCall() {
       {groupCallActive && <MainGroupCallRoom />}
       {groupCallActive && (
         <GroupCallBtn onClick={handleLeaveRoom} label="leave group call" />
+      )}
+      {groupCallActive && isHostingGroupCall && (
+        <GroupCallBtn onClick={handleCloseRoomCall} label="Close room" />
       )}
     </div>
   );

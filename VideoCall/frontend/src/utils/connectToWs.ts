@@ -7,6 +7,7 @@ import { handleCloseConnection } from "./webRTCHandler";
 import {
   connectToNewUser,
   disconnectUserFromGroupCall,
+  removeMeFromGroupcCall,
 } from "./webRTCGroupCallHandler";
 const SERVER_URL = "http://localhost:3000";
 
@@ -55,6 +56,12 @@ export const connectoToWs = () => {
   socket.on("group-call-user-disconnect", (data) => {
     disconnectUserFromGroupCall(data);
   });
+
+  socket.on("close-room", (data) => {
+    console.log("CLOSING ROOM");
+    console.log(data);
+    removeMeFromGroupcCall(data);
+  });
 };
 
 export const registerNewUser = (username: string) => {
@@ -97,6 +104,8 @@ const handleBroadCastEvent = (data) => {
     }
 
     case broadcastEvents.GROUP_CALL_ROOMS: {
+      console.log(data.groupCalls);
+
       const activeGroups = data.groupCalls.filter(
         (group) => group.socketId !== socket.id
       );
@@ -120,4 +129,12 @@ export const sendJoinGroupCallRequest = (data) => {
 
 export const sendCloseConnectionInGroupCall = (data) => {
   socket.emit("group-call-user-disconnect", data);
+};
+
+export const sendCloseRoom = (data) => {
+  socket.emit("close-room", data);
+};
+
+export const sendRequestForGroupCallLeave = (data) => {
+  socket.emit("remove-from-group-call", data);
 };
