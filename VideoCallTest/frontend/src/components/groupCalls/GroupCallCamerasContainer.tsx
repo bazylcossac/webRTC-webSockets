@@ -5,8 +5,6 @@ function GroupCallCamerasContainer() {
   const groupCallsStreams = useSelector(
     (state) => state.webrtc.groupCallsStreams
   );
-  console.log("streams");
-  console.log(groupCallsStreams);
 
   return (
     <div>

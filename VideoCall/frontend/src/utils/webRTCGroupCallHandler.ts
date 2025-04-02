@@ -15,7 +15,7 @@ import {
   sendRequestForGroupCallLeave,
 } from "./connectToWs";
 import Peer from "peerjs";
-import { resetCallDataAfterDisconnect } from "./webRTCHandler";
+
 let myPeer: null | Peer;
 
 let myPerrId: string;

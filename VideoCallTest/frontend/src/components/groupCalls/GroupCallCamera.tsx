@@ -1,5 +1,10 @@
 import { useEffect, useRef } from "react";
 
+const cameraStyle = {
+  width: "300px",
+  height: "300px",
+};
+
 function GroupCallCamera({ stream }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   console.log(stream);
@@ -14,7 +19,7 @@ function GroupCallCamera({ stream }) {
 
   return (
     <div>
-      <video ref={videoRef} autoPlay playsInline />
+      <video ref={videoRef} autoPlay playsInline style={cameraStyle} />
     </div>
   );
 }

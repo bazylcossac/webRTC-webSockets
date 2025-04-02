@@ -9,7 +9,7 @@ function GroupCall() {
         <GroupCallCamerasContainer />
       </div>
 
-      <GroupCallCreateBtn />
+       <GroupCallCreateBtn />
 
       <div>
         <ActiveGroupCallsContainer />

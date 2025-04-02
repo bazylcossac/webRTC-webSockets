@@ -11,12 +11,13 @@ const initialState = {
   micEnabled: true,
   cameraEnabled: true,
   shareScreenEnabled: true,
+  isHostingGroupCall: false,
   callIfRejected: {
     reject: false,
     answer: "",
   },
   groupCalls: [],
-  groupCallsStreams: [],
+  groupCallsStreams: [] as MediaStream[],
 };
 
 const webrtcSlice = createSlice({
@@ -62,6 +63,12 @@ const webrtcSlice = createSlice({
     addStreamToGroupCall: (state, action) => {
       state.groupCallsStreams.push(action.payload);
     },
+    setStreamsInGroupCall: (state, action) => {
+      state.groupCallsStreams = action.payload;
+    },
+    setIsHostingGroupCall: (state, action) => {
+      state.isHostingGroupCall = action.payload;
+    },
   },
 });
 
@@ -78,5 +85,7 @@ export const {
   setGroupCalls,
   setGroupCallActive,
   addStreamToGroupCall,
+  setIsHostingGroupCall,
+  setStreamsInGroupCall,
 } = webrtcSlice.actions;
 export default webrtcSlice.reducer;

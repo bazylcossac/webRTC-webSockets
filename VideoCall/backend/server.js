@@ -146,10 +146,6 @@ io.on("connection", (socket) => {
   socket.on("close-room", (data) => {
     socket.leave(data.groupCallId);
 
-    // io.to(data.groupCallId).emit("close-room", {
-    //   groupCallId: data.groupCallId,
-    // });
-
     const newGroupCalls = groupCalls.filter(
       (group) => group.peerId !== data.peerId
     );

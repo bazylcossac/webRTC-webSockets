@@ -33,6 +33,7 @@ let peerConection: RTCPeerConnection | null;
 let screenStream: MediaStream;
 let dataChannel: RTCDataChannel;
 let username: string;
+
 const createPeerConection = () => {
   peerConection = new RTCPeerConnection(configuration);
   const localStream = store.getState().webrtc.localStream as MediaStream | null;
@@ -44,7 +45,7 @@ const createPeerConection = () => {
   }
 
   peerConection.ontrack = ({ streams: [stream] }) => {
-    // store remote stream
+    
     store.dispatch(setRemoteStream(stream));
   };
 

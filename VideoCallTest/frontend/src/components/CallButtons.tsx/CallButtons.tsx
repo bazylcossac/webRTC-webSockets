@@ -5,6 +5,8 @@ import {
   setShareScreenEnabled,
 } from "../../store/slices/webrtcSlice";
 import { closeConnection, handleShareScreen } from "../../utils/webRTCHandler";
+import store from "../../store/store";
+import { leaveGroupCall } from "../../utils/webRTCGroupCallHandler";
 
 function CallButtons() {
   const dispatch = useDispatch();
@@ -14,6 +16,8 @@ function CallButtons() {
     (state) => state.webrtc.shareScreenEnabled
   );
   const cameraEnabled = useSelector((state) => state.webrtc.cameraEnabled);
+  const groupCallActive = store.getState().webrtc.groupCallActive;
+  const isHostingGroupCall = store.getState().webrtc.isHostingGroupCall;
 
   const handleMicEnableChange = () => {
     const micState = micEnabled;
@@ -32,8 +36,14 @@ function CallButtons() {
     handleShareScreen();
   };
   const handleLeave = () => {
-    closeConnection()
-};
+    if (groupCallActive && !isHostingGroupCall) {
+      leaveGroupCall();
+    } else if (groupCallActive && isHostingGroupCall) {
+      // closeGroup();
+    } else {
+      closeConnection();
+    }
+  };
 
   return (
     <div className="flex flex-row gap-4 abosolute">

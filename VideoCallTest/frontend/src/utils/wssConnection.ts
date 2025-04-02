@@ -15,7 +15,10 @@ import {
   setGroupCalls,
 } from "../store/slices/webrtcSlice";
 import { callStates } from "../constants";
-import { connectToGroup } from "./webRTCGroupCallHandler";
+import {
+  connectToGroup,
+  handleUserLeaveGroupCall,
+} from "./webRTCGroupCallHandler";
 
 const serverUrl = "http://localhost:3000";
 let socket: Socket;
@@ -65,8 +68,12 @@ export const wssConnection = () => {
     store.dispatch(setGroupCalls(activeGroups));
   });
 
-  socket.on("join-room-request", (data) => {
+  socket.on("join-group-request", (data) => {
     connectToGroup(data);
+  });
+
+  socket.on("user-leave-group-call", (localStreamId) => {
+    handleUserLeaveGroupCall(localStreamId);
   });
 };
 
@@ -111,5 +118,9 @@ export const handleCreateGroupCall = (data) => {
 };
 
 export const sendJoinRoomRequest = (data) => {
-  socket.emit("join-room-request", data);
+  socket.emit("join-group-request", data);
+};
+
+export const sendLeaveGroupCallRequest = (data) => {
+  socket.emit("user-leave-group-call", data);
 };

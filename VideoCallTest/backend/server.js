@@ -94,11 +94,17 @@ io.on("connection", (socket) => {
     io.sockets.emit("create-group-call", groupCalls);
   });
 
-  socket.on("join-room-request", (data) => {
-    io.to(data.groupCallId).emit("join-room-request", {
+  socket.on("join-group-request", (data) => {
+    io.to(data.groupCallId).emit("join-group-request", {
       peerId: data.groupPeerId,
       streamId: data.localStreamId,
     });
     socket.join(data.groupCallId);
+  });
+
+  socket.on("user-leave-group-call", (data) => {
+    socket.leave(data.groupCallId)
+
+    io.to(data.groupCallId).emit("user-leave-group-call", data.localStreamId)
   });
 });
