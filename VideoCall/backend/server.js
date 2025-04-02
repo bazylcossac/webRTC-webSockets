@@ -65,7 +65,7 @@ io.on("connection", (socket) => {
     // not workking ??? and idc why the fuck
 
     io.sockets.emit("broadcast", {
-      eventType: broadcastEvents.GROUP_CALL_ROOMS,
+      eventType: broadcastEvents.CLOSE_GROUP_CALL,
       groupCalls: groupCalls,
     });
   });

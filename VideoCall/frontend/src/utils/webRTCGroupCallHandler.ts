@@ -121,6 +121,11 @@ export const clearAfterGroupCall = () => {
   store.dispatch(setGroupCallASctive(false));
   store.dispatch(setStreamsInGroupCall([]));
   store.dispatch(setCallState(callStates.CALL_AVAILABLE));
+
+  const localStream = store.getState().webrtc.localStream;
+  if (!localStream) return;
+  localStream.getAudioTracks()[0].enabled = true;
+  localStream.getVideoTracks()[0].enabled = true;
 };
 
 export const disconnectUserFromGroupCall = (localStreamId: string) => {
