@@ -43,6 +43,8 @@ function GroupCall() {
       {groupCallActive && isHostingGroupCall && (
         <GroupCallBtn onClick={handleCloseRoomCall} label="Close room" />
       )}
+
+      
     </div>
   );
 }

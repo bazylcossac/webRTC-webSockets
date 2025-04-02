@@ -1,6 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { callStates } from "../../lib/constants";
 
+type MessageType = {
+  name: string;
+  message: string;
+};
+
 const initialState = {
   localStream: null as MediaStream | null,
   remoteStream: null,
@@ -13,6 +18,7 @@ const initialState = {
   groupCallActive: false,
   groupCallStreams: [] as MediaStream[],
   isHostingGroupCall: false,
+  messages: [] as MessageType[],
   callRejected: {
     rejected: false,
     answer: "",
@@ -77,6 +83,12 @@ const webRTCSlice = createSlice({
     setIsHostingGroupCall: (state, action) => {
       state.isHostingGroupCall = action.payload;
     },
+    addMessage: (state, action) => {
+      state.messages.unshift({
+        name: action.payload.name,
+        message: action.payload.message,
+      });
+    },
   },
 });
 
@@ -95,5 +107,6 @@ export const {
   addStreamToGroupCall,
   setStreamsInGroupCall,
   setIsHostingGroupCall,
+  addMessage,
 } = webRTCSlice.actions;
 export default webRTCSlice.reducer;

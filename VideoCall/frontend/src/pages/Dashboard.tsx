@@ -14,10 +14,13 @@ import ConversationButtons from "../components/ConversationButtons/ConversationB
 import { connectWithPeer } from "../utils/webRTCGroupCallHandler";
 import GroupCallRooms from "../components/GroupCallRooms/callGroupRooms";
 import GroupCall from "../GroupCall/groupCall";
+import ChatBox from "../components/ChatBox";
+import ChatInput from "../components/ChatInput";
 
 function Dashboard() {
   const callState = useSelector((state) => state.webrtc.callState);
   const callRejected = useSelector((state) => state.webrtc.callRejected);
+  const groupCallActive = useSelector((state) => state.webrtc.groupCallActive);
   const callingDialogVisible = useSelector(
     (state) => state.webrtc.callingDialogVisible
   );
@@ -36,6 +39,12 @@ function Dashboard() {
           <DashboardRemoteVideo />
           <GroupCall />
           {callState === callStates.CALL_IN_PROGRESS && <ConversationButtons />}
+          {callState === callStates.CALL_IN_PROGRESS && !groupCallActive && (
+            <ChatBox />
+          )}
+           {callState === callStates.CALL_IN_PROGRESS && !groupCallActive && (
+            <ChatInput />
+          )}
           {callingDialogVisible && <CallingDialog />}
           {callRejected.rejected && <RejectedDialog />}
           {callState === callStates.CALL_REQUESTED && <IncomingCall />}

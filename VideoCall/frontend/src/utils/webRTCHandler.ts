@@ -9,6 +9,7 @@ import {
   setLocalScreenShareEnabled,
   resetCallState,
   setGroupCallASctive,
+  addMessage,
 } from "../store/slices/webrtcSlice";
 import { callStates, preOfferAnswers } from "../lib/constants";
 import * as wss from "../utils/connectToWs";
@@ -30,12 +31,14 @@ const configuration = {
 let connectedUserSocketId: string | null;
 let peerConection: RTCPeerConnection | null;
 let screenStream: MediaStream;
-
+let dataChannel: RTCDataChannel;
+let username: string;
 const createPeerConection = () => {
   peerConection = new RTCPeerConnection(configuration);
   const localStream = store.getState().webrtc.localStream as MediaStream | null;
   if (!localStream) return;
-
+  const name = store.getState().user.name;
+  username = name;
   for (const track of localStream.getTracks()) {
     peerConection.addTrack(track, localStream);
   }
@@ -43,6 +46,28 @@ const createPeerConection = () => {
   peerConection.ontrack = ({ streams: [stream] }) => {
     // store remote stream
     store.dispatch(setRemoteStream(stream));
+  };
+
+  peerConection.ondatachannel = (event) => {
+    const dataChannel = event.channel;
+
+    dataChannel.onopen = () => {
+      console.log("sucessfully opened data chanel");
+    };
+
+    dataChannel.onmessage = (event) => {
+      console.log(event.data);
+      store.dispatch(addMessage({ name: username, message: event.data }));
+    };
+  };
+
+  dataChannel = peerConection.createDataChannel("chat");
+
+  dataChannel.onopen = () => {
+    console.log("data chanel opened");
+  };
+  dataChannel.onmessage = (event) => {
+    console.log(event.data);
   };
 
   peerConection.onicecandidate = (event) => {
@@ -253,4 +278,9 @@ export const isCallIsPossible = () => {
 export const resetCallData = () => {
   connectedUserSocketId = null;
   store.dispatch(setCallState(callStates.CALL_AVAILABLE));
+};
+
+export const sendMessage = (message) => {
+  dataChannel.send(message);
+  dataChannel.onmessage!(message);
 };
