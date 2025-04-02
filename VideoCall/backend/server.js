@@ -118,7 +118,7 @@ io.on("connection", (socket) => {
       hostName: data.hostName,
       socketId: socket.id,
     });
-    
+
     io.sockets.emit("broadcast", {
       eventType: broadcastEvents.GROUP_CALL_ROOMS,
       peerId: data.peerId,
@@ -132,5 +132,13 @@ io.on("connection", (socket) => {
       streamId: data.localStreamId,
     });
     socket.join(data.groupCallId);
+  });
+
+  socket.on("group-call-user-disconnect", (data) => {
+    socket.leave(data.groupCallId);
+    io.to(data.groupCallId).emit(
+      "group-call-user-disconnect",
+      data.localStreamId
+    );
   });
 });

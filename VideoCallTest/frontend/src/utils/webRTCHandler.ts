@@ -74,7 +74,7 @@ const createPeerConection = () => {
   };
 
   peerConection.onconnectionstatechange = (event) => {
-    if (peerConection!.connecitonState === "connected") {
+    if (peerConection!.connectionState === "connected") {
       console.log("CONNECTED TO USER");
     }
   };

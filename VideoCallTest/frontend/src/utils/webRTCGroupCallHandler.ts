@@ -54,7 +54,7 @@ export const createGroupCall = () => {
   store.dispatch(setGroupCallActive(true));
 };
 
-export const joinRoom = (groupCallId: string, hostPeerId: string) => {
+export const joinRoom = (groupCallId: string) => {
   const localStream = store.getState().webrtc.localStream as MediaStream | null;
   if (!localStream) return;
 

@@ -4,7 +4,10 @@ import { setActiveGroups, setActiveUsers } from "../store/slices/userSlice";
 import * as webRTCHandler from "./webRTCHandler";
 import { broadcastEvents } from "../lib/constants";
 import { handleCloseConnection } from "./webRTCHandler";
-import { connectToNewUser } from "./webRTCGroupCallHandler";
+import {
+  connectToNewUser,
+  disconnectUserFromGroupCall,
+} from "./webRTCGroupCallHandler";
 const SERVER_URL = "http://localhost:3000";
 
 let socket: Socket;
@@ -48,6 +51,10 @@ export const connectoToWs = () => {
   socket.on("group-call-join-request", (data) => {
     connectToNewUser(data);
   });
+
+  socket.on("group-call-user-disconnect", (data) => {
+    disconnectUserFromGroupCall(data);
+  });
 };
 
 export const registerNewUser = (username: string) => {
@@ -67,7 +74,7 @@ export const sendPreOffer = (data) => {
   socket.emit("pre-offer", data);
 };
 
-export const sendPreOfferAnswer = (data)1 => {
+export const sendPreOfferAnswer = (data) => {
   socket.emit("pre-offer-answer", data);
 };
 
@@ -109,4 +116,8 @@ export const sendCreateRoomRequest = (data) => {
 
 export const sendJoinGroupCallRequest = (data) => {
   socket.emit("group-call-join-request", data);
+};
+
+export const sendCloseConnectionInGroupCall = (data) => {
+  socket.emit("group-call-user-disconnect", data);
 };

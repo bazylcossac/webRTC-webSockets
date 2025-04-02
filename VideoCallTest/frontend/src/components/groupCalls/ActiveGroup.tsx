@@ -19,7 +19,7 @@ const button = {
 
 function ActiveGroup({ groupCall }: { groupCall: groupCallType }) {
   const handleJoinGroup = () => {
-    joinRoom(groupCall.groupId, groupCall.hostPeerId);
+    joinRoom(groupCall.groupId);
   };
 
   return (

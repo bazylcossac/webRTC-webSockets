@@ -21,6 +21,7 @@ function GroupVideoElement({ stream }: { stream: MediaStream }) {
   return (
     <div>
       <video ref={videoRef} playsInline autoPlay style={style} />
+      <p>{stream.id}</p>
     </div>
   );
 }

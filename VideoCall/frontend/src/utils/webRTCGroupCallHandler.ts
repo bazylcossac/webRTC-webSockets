@@ -3,13 +3,20 @@ import {
   addStreamToGroupCall,
   setCallState,
   setGroupCallASctive,
+  setStreamsInGroupCall,
 } from "../store/slices/webrtcSlice";
 import store from "../store/store";
-import { sendCreateRoomRequest, sendJoinGroupCallRequest } from "./connectToWs";
+import {
+  sendCloseConnectionInGroupCall,
+  sendCreateRoomRequest,
+  sendJoinGroupCallRequest,
+} from "./connectToWs";
 import Peer from "peerjs";
+import { resetCallDataAfterDisconnect } from "./webRTCHandler";
+let myPeer: null | Peer;
 
-let myPeer;
 let myPerrId: string;
+let currentGroupCallId: string | null;
 
 export const connectWithPeer = () => {
   myPeer = new Peer("", {
@@ -62,6 +69,9 @@ export const joinRoomRequest = (groupCallId: string, socketId: string) => {
     peerId: myPerrId,
   });
   store.dispatch(setGroupCallASctive(true));
+  console.log("JOINING");
+  console.log(groupCallId);
+  currentGroupCallId = groupCallId;
 };
 
 export const connectToNewUser = (data) => {
@@ -77,4 +87,32 @@ export const connectToNewUser = (data) => {
       store.dispatch(addStreamToGroupCall(incomingStream));
     }
   });
+};
+
+export const handleGroupCallUserDisconnect = () => {
+  const localStream = store.getState().webrtc.localStream;
+  if (!localStream) return;
+
+  sendCloseConnectionInGroupCall({
+    localStreamId: localStream.id,
+    groupCallId: currentGroupCallId,
+  });
+
+  currentGroupCallId = null;
+  myPeer!.destroy();
+  connectWithPeer();
+  store.dispatch(setGroupCallASctive(false));
+  store.dispatch(setStreamsInGroupCall([]))
+  store.dispatch(setCallState(callStates.CALL_AVAILABLE));
+};
+
+
+export const disconnectUserFromGroupCall = (localStreamId: string) => {
+  const groupCallStreams = store.getState().webrtc.groupCallStreams;
+
+  const newStreams = groupCallStreams.filter(
+    (stream) => stream.id !== localStreamId
+  );
+
+  store.dispatch(setStreamsInGroupCall(newStreams));
 };

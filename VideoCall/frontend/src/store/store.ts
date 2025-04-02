@@ -13,11 +13,13 @@ const store = configureStore({
           "webrtc/setLocalStream",
           "webrtc/setRemoteStream",
           "webrtc/addStreamToGroupCall",
+          "webrtc/setStreamsInGroupCall",
         ],
         ignoredPaths: [
           "webrtc.localStream",
           "webrtc.remoteStream",
           "webrtc.groupCallStreams",
+          "webrtc.groupCallActive",
         ],
       },
     }),
