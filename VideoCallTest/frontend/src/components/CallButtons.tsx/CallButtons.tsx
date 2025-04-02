@@ -6,7 +6,10 @@ import {
 } from "../../store/slices/webrtcSlice";
 import { closeConnection, handleShareScreen } from "../../utils/webRTCHandler";
 import store from "../../store/store";
-import { leaveGroupCall } from "../../utils/webRTCGroupCallHandler";
+import {
+  closeGroupCall,
+  leaveGroupCall,
+} from "../../utils/webRTCGroupCallHandler";
 
 function CallButtons() {
   const dispatch = useDispatch();
@@ -39,7 +42,7 @@ function CallButtons() {
     if (groupCallActive && !isHostingGroupCall) {
       leaveGroupCall();
     } else if (groupCallActive && isHostingGroupCall) {
-      // closeGroup();
+      closeGroupCall();
     } else {
       closeConnection();
     }

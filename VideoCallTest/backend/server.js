@@ -26,7 +26,11 @@ const io = socket(server, {
     methods: ["GET", "POST"],
   },
 });
-
+const broadcastEvents = {
+  ACTIVE_USERS: "ACTIVE_USERS",
+  GROUP_CALL_ROOMS: "GROUP_CALL_ROOMS",
+  CLOSE_GROUP_CALL: "CLOSE_GROUP_CALL",
+};
 let users = [];
 let groupCalls = [];
 
@@ -77,6 +81,15 @@ io.on("connection", (socket) => {
     console.log(users);
 
     io.sockets.emit("user-left", users);
+
+    const newGroupCalls = groupCalls.filter(
+      (group) => group.socketId !== socket.id
+    );
+
+    io.sockets.emit("broadcast", {
+      eventType: broadcastEvents.CLOSE_GROUP_CALL,
+      groupCalls: newGroupCalls,
+    });
   });
 
   /// peerjs
@@ -103,8 +116,29 @@ io.on("connection", (socket) => {
   });
 
   socket.on("user-leave-group-call", (data) => {
-    socket.leave(data.groupCallId)
+    socket.leave(data.groupCallId);
 
-    io.to(data.groupCallId).emit("user-leave-group-call", data.localStreamId)
+    io.to(data.groupCallId).emit("user-leave-group-call", data.localStreamId);
+  });
+
+  socket.on("close-group-call", (data) => {
+    socket.leave(data.groupCallId);
+
+    const newGroups = groupCalls.filter(
+      (group) => group.hostPeerId !== data.peerId
+    );
+    groupCalls = newGroups;
+    console.log(groupCalls);
+
+    // io.to(data.groupCallId).emit("close-group-call", data);
+
+    io.sockets.emit("broadcast", {
+      eventType: broadcastEvents.CLOSE_GROUP_CALL,
+      groupCalls: groupCalls,
+    });
+  });
+
+  socket.on("kick-user-from-group-call", (data) => {
+    socket.leave(data.groupCallId);
   });
 });

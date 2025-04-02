@@ -2,6 +2,8 @@ import Peer from "peerjs";
 import store from "../store/store";
 import {
   handleCreateGroupCall,
+  kickUsersFromGroupCall,
+  sendCloseGroupRequest,
   sendJoinRoomRequest,
   sendLeaveGroupCallRequest,
 } from "./wssConnection";
@@ -9,6 +11,7 @@ import {
   addStreamToGroupCall,
   setCallState,
   setGroupCallActive,
+  setIsHostingGroupCall,
   setStreamsInGroupCall,
 } from "../store/slices/webrtcSlice";
 import { callStates } from "../constants";
@@ -119,4 +122,23 @@ export const clearAfterLeavingGroupCall = () => {
   store.dispatch(setGroupCallActive(false));
   store.dispatch(setCallState(callStates.CALL_AVAILABLE));
   store.dispatch(setStreamsInGroupCall([]));
+};
+
+export const closeGroupCall = () => {
+  sendCloseGroupRequest({
+    groupCallId: currentGroupId,
+    peerId: myPeerId,
+  });
+  store.dispatch(setIsHostingGroupCall(false));
+  clearAfterLeavingGroupCall();
+};
+
+export const kickUserAfterClosingGroupCall = (data) => {
+  const localStream = store.getState().webrtc.localStream as MediaStream | null;
+  if (!localStream) return;
+  kickUsersFromGroupCall({
+    groupCallId: data.groupCallId,
+  });
+  handleUserLeaveGroupCall(localStream.id);
+  clearAfterLeavingGroupCall();
 };

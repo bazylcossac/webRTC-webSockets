@@ -14,10 +14,12 @@ import {
   setCallState,
   setGroupCalls,
 } from "../store/slices/webrtcSlice";
-import { callStates } from "../constants";
+import { broadcastEvents, callStates } from "../constants";
 import {
+  clearAfterLeavingGroupCall,
   connectToGroup,
   handleUserLeaveGroupCall,
+  kickUserAfterClosingGroupCall,
 } from "./webRTCGroupCallHandler";
 
 const serverUrl = "http://localhost:3000";
@@ -29,6 +31,10 @@ export const wssConnection = () => {
   socket.on("user-join", (data) => {
     console.log("REGISTER ID:", socket.id);
     handleUsers(data);
+  });
+
+  socket.on("broadcast", (data) => {
+    handleBroadcastEvent(data);
   });
 
   socket.on("pre-offer", (data) => {
@@ -74,6 +80,10 @@ export const wssConnection = () => {
 
   socket.on("user-leave-group-call", (localStreamId) => {
     handleUserLeaveGroupCall(localStreamId);
+  });
+
+  socket.on("close-group-call", (data) => {
+    kickUserAfterClosingGroupCall(data);
   });
 };
 
@@ -123,4 +133,31 @@ export const sendJoinRoomRequest = (data) => {
 
 export const sendLeaveGroupCallRequest = (data) => {
   socket.emit("user-leave-group-call", data);
+};
+
+export const sendCloseGroupRequest = (data) => {
+  socket.emit("close-group-call", data);
+};
+
+export const kickUsersFromGroupCall = (data) => {
+  socket.emit("kick-user-from-group-call", data);
+};
+
+export const handleBroadcastEvent = (data) => {
+  switch (data.eventType) {
+    case broadcastEvents.CLOSE_GROUP_CALL: {
+      store.dispatch(setGroupCalls(data.groupCalls));
+      clearAfterLeavingGroupCall();
+      break;
+    }
+    case broadcastEvents.GROUP_CALL_ROOMS: {
+      const newGroupCalls = data.groupCalls.filter(
+        (group) => group.socketId !== socket.id
+      );
+      store.dispatch(setGroupCalls(newGroupCalls));
+      break;
+    }z
+    default:
+      return;
+  }
 };
